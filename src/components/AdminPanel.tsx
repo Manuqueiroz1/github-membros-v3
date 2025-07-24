@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
-import { Settings, Plus, Edit3, Save, X, Upload, Trash2, Eye, EyeOff, ArrowLeft, Video, MessageSquare } from 'lucide-react';
+import { Settings, Plus, Edit3, Save, X, Upload, Trash2, Eye, EyeOff, ArrowLeft, Video, MessageSquare, Users, UserPlus, UserMinus, Calendar, Shield } from 'lucide-react';
 import { BonusResource, BonusLesson, QuizQuestion } from '../types';
 import { bonusResources } from '../data/bonusData';
 import { OnboardingVideo, PopupContent, getOnboardingVideos, getPopupContents, saveOnboardingVideos, savePopupContents } from '../data/onboardingData';
+import { ManualAccessUser, getManualAccessUsers, grantManualAccess, revokeManualAccess } from '../utils/adminConfig';
 
 interface AdminPanelProps {
   isVisible: boolean;
