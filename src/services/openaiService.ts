@@ -59,8 +59,11 @@ class OpenAIService {
   async sendMessage(message: string): Promise<string> {
     // Modo simulação se não estiver configurado
     if (!this.isInitialized || !this.openai || !this.threadId) {
+      console.log('🤖 Usando modo simulação - OpenAI não configurado');
       return this.simulateResponse(message);
     }
+
+    console.log('🚀 Enviando mensagem para OpenAI Assistant...');
 
     try {
       // Adicionar mensagem do usuário à thread
@@ -95,6 +98,7 @@ class OpenAIService {
       throw new Error(`Run failed with status: ${runStatus.status}`);
     } catch (error) {
       console.error('❌ Erro ao enviar mensagem:', error);
+      console.log('🔄 Fallback para modo simulação');
       return this.simulateResponse(message);
     }
   }
@@ -146,11 +150,9 @@ Responda APENAS com o JSON, sem texto adicional.
 
   private simulateResponse(message: string): string {
     const responses = [
-      "Entendo sua pergunta! Como sua Teacher Poli, vou te ajudar com isso. Primeiro, vamos focar no seu nível atual de inglês.",
-      "Excelente pergunta! Para criar o melhor plano para você, preciso entender melhor seus objetivos específicos.",
-      "Perfeito! Vou criar um plano personalizado baseado no que você me contou. Que tipo de situações você mais quer praticar?",
-      "Ótimo! Com base nas suas informações, posso ver que você tem potencial para progredir rapidamente. Vamos estruturar um plano eficiente.",
-      "Entendi perfeitamente! Vou adaptar nossa abordagem ao seu estilo de aprendizagem. Prefere focar mais na conversação ou na gramática?"
+      "Entendo sua pergunta! Como sua Teacher Poli, vou te ajudar com isso. Primeiro, vamos focar no seu nível atual de inglês.\n\n💡 *Para ativar a IA real, configure suas credenciais OpenAI nas Configurações*",
+      "Excelente pergunta! Para criar o melhor plano para você, preciso entender melhor seus objetivos específicos.\n\n⚙️ *Modo simulação ativo - Configure OpenAI para respostas personalizadas*",
+      "Perfeito! Vou criar um plano personalizado baseado no que você me contou. Que tipo de situações você mais quer praticar?\n\n🔧 *Dica: Vá em Configurações → Configurar IA (OpenAI) para ativar a IA real*"
     ];
     
     return responses[Math.floor(Math.random() * responses.length)];

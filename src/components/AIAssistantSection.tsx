@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Brain, Send, User, Bot, Sparkles, BookOpen, Target, Clock, Download, FileText } from 'lucide-react';
 import SupportButton from './SupportButton';
+import openaiService from '../services/openaiService';
 
 interface Message {
   id: string;
@@ -62,18 +63,8 @@ export default function AIAssistantSection({ onPlanGenerated }: AIAssistantSecti
     setIsLoading(true);
 
     try {
-      // Simular resposta da IA (pode ser substituído por OpenAI real)
-      await new Promise(resolve => setTimeout(resolve, 1000 + Math.random() * 2000));
-      
-      const responses = [
-        "Entendo sua pergunta! Como sua Teacher Poli, vou te ajudar com isso. Primeiro, vamos focar no seu nível atual de inglês.",
-        "Excelente pergunta! Para criar o melhor plano para você, preciso entender melhor seus objetivos específicos.",
-        "Perfeito! Vou criar um plano personalizado baseado no que você me contou. Que tipo de situações você mais quer praticar?",
-        "Ótimo! Com base nas suas informações, posso ver que você tem potencial para progredir rapidamente. Vamos estruturar um plano eficiente.",
-        "Entendi perfeitamente! Vou adaptar nossa abordagem ao seu estilo de aprendizagem. Prefere focar mais na conversação ou na gramática?"
-      ];
-      
-      const aiResponse = responses[Math.floor(Math.random() * responses.length)];
+      // Usar OpenAI Service para resposta real
+      const aiResponse = await openaiService.sendMessage(inputMessage);
       
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
@@ -85,48 +76,59 @@ export default function AIAssistantSection({ onPlanGenerated }: AIAssistantSecti
       
       // Verificar se a resposta indica geração de plano
       if (aiResponse.toLowerCase().includes('plano') || aiResponse.toLowerCase().includes('plan')) {
-        // Simular geração de plano
-        const planData = {
-          title: `Plano Personalizado - Intermediário`,
-          level: 'Intermediário',
-          objective: 'Conversação fluente',
-          dailyTime: '45 minutos',
-          duration: '30 dias',
-          topics: [
-            'Vocabulário essencial',
-            'Gramática básica',
-            'Conversação prática',
-            'Compreensão auditiva',
-            'Escrita funcional'
-          ],
-          schedule: [
-            {
-              week: 1,
-              focus: 'Fundamentos',
-              activities: ['Vocabulário básico', 'Presente simples', 'Conversação inicial']
-            },
-            {
-              week: 2,
-              focus: 'Desenvolvimento',
-              activities: ['Tempos verbais', 'Listening practice', 'Diálogos práticos']
-            },
-            {
-              week: 3,
-              focus: 'Aplicação',
-              activities: ['Situações reais', 'Escrita prática', 'Pronúncia']
-            },
-            {
-              week: 4,
-              focus: 'Consolidação',
-              activities: ['Review geral', 'Conversação fluente', 'Avaliação']
-            }
-          ],
-          generatedAt: new Date()
-        };
-        
-        setGeneratedPlan(planData);
+        // Gerar plano real usando OpenAI
+        try {
+          const planData = await openaiService.generateStudyPlan({
+            level: 'Intermediário', // Pode ser extraído da conversa
+            objectives: ['Conversação fluente'],
+            availableTime: '45 minutos',
+            interests: ['Geral']
+          });
+          setGeneratedPlan(planData);
+        } catch (error) {
+          console.error('Erro ao gerar plano:', error);
+          // Fallback para plano simulado
+          const planData = {
+            title: `Plano Personalizado - Intermediário`,
+            level: 'Intermediário',
+            objective: 'Conversação fluente',
+            dailyTime: '45 minutos',
+            duration: '30 dias',
+            topics: [
+              'Vocabulário essencial',
+              'Gramática básica',
+              'Conversação prática',
+              'Compreensão auditiva',
+              'Escrita funcional'
+            ],
+            schedule: [
+              {
+                week: 1,
+                focus: 'Fundamentos',
+                activities: ['Vocabulário básico', 'Presente simples', 'Conversação inicial']
+              },
+              {
+                week: 2,
+                focus: 'Desenvolvimento',
+                activities: ['Tempos verbais', 'Listening practice', 'Diálogos práticos']
+              },
+              {
+                week: 3,
+                focus: 'Aplicação',
+                activities: ['Situações reais', 'Escrita prática', 'Pronúncia']
+              },
+              {
+                week: 4,
+                focus: 'Consolidação',
+                activities: ['Review geral', 'Conversação fluente', 'Avaliação']
+              }
+            ],
+            generatedAt: new Date()
+          };
+          setGeneratedPlan(planData);
+        }
       }
-      
+        
       // Notify parent component that plan was generated
       if (onPlanGenerated) {
         onPlanGenerated();
@@ -137,9 +139,27 @@ export default function AIAssistantSection({ onPlanGenerated }: AIAssistantSecti
           alert(message);
         }, 500);
       }
+      }
       
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
+      
+      // Fallback para resposta simulada em caso de erro
+      const fallbackResponses = [
+        "Entendo sua pergunta! Como sua Teacher Poli, vou te ajudar com isso. Primeiro, vamos focar no seu nível atual de inglês.",
+        "Excelente pergunta! Para criar o melhor plano para você, preciso entender melhor seus objetivos específicos.",
+        "Perfeito! Vou criar um plano personalizado baseado no que você me contou. Que tipo de situações você mais quer praticar?"
+      ];
+      
+      const fallbackResponse = fallbackResponses[Math.floor(Math.random() * fallbackResponses.length)];
+      
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        type: 'assistant',
+        content: fallbackResponse + "\n\n⚠️ *Modo simulação ativo - Configure OpenAI nas configurações para IA real*",
+        timestamp: new Date()
+      };
+      setMessages(prev => [...prev, assistantMessage]);
     } finally {
       setIsLoading(false);
     }
