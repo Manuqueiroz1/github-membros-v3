@@ -4,7 +4,6 @@ import { useTheme } from '../hooks/useTheme';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import SupportButton from './SupportButton';
 import PersonalDataModal from './PersonalDataModal';
-import ConfigurationPanel from './ConfigurationPanel';
 
 export default function SettingsSection() {
   const { theme, setTheme, actualTheme } = useTheme();
@@ -26,7 +25,6 @@ export default function SettingsSection() {
   });
 
   const [showPersonalDataModal, setShowPersonalDataModal] = React.useState(false);
-  const [showConfigPanel, setShowConfigPanel] = React.useState(false);
 
   const handleNotificationChange = (key: string, value: boolean) => {
     setNotifications(prev => ({
@@ -126,9 +124,9 @@ export default function SettingsSection() {
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Alterar senha</span>
             </button>
             <button 
-              onClick={() => setShowConfigPanel(true)}
+              onClick={() => setShowPersonalDataModal(true)}
               className="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-colors">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Configurar IA (OpenAI)</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Dados pessoais</span>
             </button>
           </div>
         </div>
@@ -325,12 +323,6 @@ export default function SettingsSection() {
       <PersonalDataModal 
         isOpen={showPersonalDataModal}
         onClose={() => setShowPersonalDataModal(false)}
-      />
-
-      {/* Configuration Panel */}
-      <ConfigurationPanel
-        isOpen={showConfigPanel}
-        onClose={() => setShowConfigPanel(false)}
       />
 
       {/* Support Section */}

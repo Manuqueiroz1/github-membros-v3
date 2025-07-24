@@ -2,8 +2,6 @@ import React, { useState } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { User } from './types';
 import WelcomeModal from './components/WelcomeModal';
-import AdminPanel from './components/AdminPanel';
-import { isAdmin } from './utils/adminConfig';
 
 // Components
 import Header from './components/Header';
@@ -20,6 +18,8 @@ import PlanRequiredModal from './components/PlanRequiredModal';
 import LoginPage from './components/LoginPage';
 import EmailVerificationPage from './components/EmailVerificationPage';
 import PasswordCreationPage from './components/PasswordCreationPage';
+import AdminPanel from './components/AdminPanel';
+import { isAdmin } from './utils/adminConfig';
 
 type AuthStep = 'login' | 'verification' | 'password' | 'authenticated';
 
