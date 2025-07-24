@@ -139,7 +139,6 @@ export default function AIAssistantSection({ onPlanGenerated }: AIAssistantSecti
           alert(message);
         }, 500);
       }
-      }
       
     } catch (error) {
       console.error('Erro ao enviar mensagem:', error);
@@ -181,6 +180,7 @@ export default function AIAssistantSection({ onPlanGenerated }: AIAssistantSecti
     element.click();
     document.body.removeChild(element);
   };
+  
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
       <div className="mb-8">
