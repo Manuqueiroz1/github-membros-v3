@@ -33,3 +33,27 @@ export interface QuizQuestion {
   correctAnswer: number;
   explanation?: string;
 }
+
+export interface BonusLesson {
+  id: string;
+  title: string;
+  description: string;
+  videoUrl: string;
+  duration: string;
+  textContent: string;
+  exercises: QuizQuestion[];
+  completed: boolean;
+}
+
+export interface BonusResource {
+  id: string;
+  title: string;
+  description: string;
+  type: 'course' | 'ebook' | 'guide';
+  thumbnail: string;
+  totalLessons: number;
+  totalDuration: string;
+  lessons: BonusLesson[];
+  rating: number;
+  downloads: number;
+}

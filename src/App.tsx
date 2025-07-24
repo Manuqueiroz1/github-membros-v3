@@ -122,7 +122,7 @@ export default function App() {
     
     // Only lock tabs on first access AND if user hasn't generated a plan yet
     if (user.firstAccess && !user.hasGeneratedPlan) {
-      return ['teacher-poli', 'resources', 'community', 'settings'];
+      return ['teacher-poli', 'resources', 'community'];
     }
     
     return [];

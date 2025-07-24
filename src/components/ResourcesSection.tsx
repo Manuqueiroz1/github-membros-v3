@@ -1,57 +1,33 @@
 import React from 'react';
-import { Download, FileText, Headphones, Video, BookOpen, Star, Play } from 'lucide-react';
+import { Download, FileText, Headphones, Video, BookOpen, Star, Play, ArrowRight, Clock, Award } from 'lucide-react';
 import SupportButton from './SupportButton';
-
-interface Resource {
-  id: string;
-  title: string;
-  description: string;
-  type: 'pdf' | 'audio' | 'video' | 'ebook';
-  size: string;
-  rating: number;
-  downloads: number;
-}
-
-const resources: Resource[] = [
-  {
-    id: '1',
-    title: 'Maximizando seu Aprendizado com a Teacher Poli',
-    description: 'Ebook Completo Explicando Todas as Funcionalidades da Teacher Poli',
-    type: 'pdf',
-    size: '2.5 MB',
-    rating: 4.8,
-    downloads: 1250
-  },
-  {
-    id: '2',
-    title: 'Curso Stress in Pronunciation',
-    description: 'Conteúdo complementar para aprofundar seus estudos e aprender como os nativos realmente falam',
-    type: 'video',
-    size: '1.2 GB',
-    rating: 4.9,
-    downloads: 890
-  },
-  {
-    id: '3',
-    title: 'Entendendo e Aplicando o Método APA',
-    description: 'Descubra como aplicar o método APA na sua jornada de aprendizado com a Teacher Poli',
-    type: 'ebook',
-    size: '1.8 MB',
-    rating: 4.7,
-    downloads: 1100
-  }
-];
+import { bonusResources } from '../data/bonusData';
+import BonusDetailPage from './BonusDetailPage';
 
 export default function ResourcesSection() {
+  const [selectedBonus, setSelectedBonus] = React.useState<string | null>(null);
+
+  if (selectedBonus) {
+    const bonus = bonusResources.find(b => b.id === selectedBonus);
+    if (bonus) {
+      return (
+        <BonusDetailPage 
+          bonus={bonus} 
+          onBack={() => setSelectedBonus(null)} 
+        />
+      );
+    }
+  }
+
   const getIcon = (type: string) => {
     switch (type) {
-      case 'pdf':
+      case 'ebook':
         return FileText;
       case 'audio':
         return Headphones;
-      case 'video':
+      case 'course':
         return Video;
-      case 'ebook':
+      case 'guide':
         return BookOpen;
       default:
         return FileText;
@@ -60,13 +36,13 @@ export default function ResourcesSection() {
 
   const getTypeColor = (type: string) => {
     switch (type) {
-      case 'pdf':
+      case 'ebook':
         return 'bg-red-100 text-red-600';
       case 'audio':
         return 'bg-green-100 text-green-600';
-      case 'video':
+      case 'course':
         return 'bg-blue-100 text-blue-600';
-      case 'ebook':
+      case 'guide':
         return 'bg-purple-100 text-purple-600';
       default:
         return 'bg-gray-100 text-gray-600';
@@ -126,24 +102,46 @@ export default function ResourcesSection() {
 
       {/* Resources Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {resources.map((resource) => {
+        {bonusResources.map((resource) => {
           const Icon = getIcon(resource.type);
           return (
-            <div key={resource.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6 hover:shadow-md transition-shadow">
+            <div key={resource.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
+              {/* Thumbnail */}
+              <div className="relative h-48 bg-gray-200">
+                <img 
+                  src={resource.thumbnail} 
+                  alt={resource.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute top-3 right-3">
+                  <span className={`px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(resource.type)}`}>
+                    {resource.type.toUpperCase()}
+                  </span>
+                </div>
+              </div>
+              
+              <div className="p-4 sm:p-6">
               <div className="flex items-start justify-between mb-4">
                 <div className={`p-3 rounded-lg ${getTypeColor(resource.type)}`}>
                   <Icon className="h-5 w-5 sm:h-6 sm:w-6" />
                 </div>
-                <span className={`px-2 py-1 text-xs font-medium rounded-full ${getTypeColor(resource.type)}`}>
-                  {resource.type.toUpperCase()}
-                </span>
               </div>
               
               <h3 className="text-base sm:text-lg font-semibold text-gray-900 mb-2 line-clamp-2">{resource.title}</h3>
               <p className="text-gray-600 text-xs sm:text-sm mb-4 line-clamp-3">{resource.description}</p>
               
+              {/* Stats */}
               <div className="flex items-center justify-between text-sm text-gray-500 mb-4">
-                <span className="text-xs sm:text-sm">{resource.size}</span>
+                <div className="flex items-center space-x-4">
+                  <div className="flex items-center">
+                    <Clock className="h-4 w-4 mr-1" />
+                    <span className="text-xs">{resource.totalDuration}</span>
+                  </div>
+                  <div className="flex items-center">
+                    <BookOpen className="h-4 w-4 mr-1" />
+                    <span className="text-xs">{resource.totalLessons} aulas</span>
+                  </div>
+                </div>
                 <div className="flex items-center">
                   <Star className="h-4 w-4 text-yellow-400 fill-current mr-1" />
                   <span className="text-xs sm:text-sm">{resource.rating}</span>
@@ -152,11 +150,15 @@ export default function ResourcesSection() {
               
               <div className="flex items-center justify-between">
                 <span className="text-xs sm:text-sm text-gray-500">{resource.downloads} downloads</span>
-                <button className="inline-flex items-center px-3 sm:px-4 py-2 bg-purple-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors">
-                  <Download className="mr-2 h-4 w-4" />
-                  <span className="hidden sm:inline">Download</span>
-                  <span className="sm:hidden">↓</span>
+                <button 
+                  onClick={() => setSelectedBonus(resource.id)}
+                  className="inline-flex items-center px-3 sm:px-4 py-2 bg-purple-600 text-white text-xs sm:text-sm font-medium rounded-lg hover:bg-purple-700 transition-colors"
+                >
+                  <ArrowRight className="mr-2 h-4 w-4" />
+                  <span className="hidden sm:inline">Acessar</span>
+                  <span className="sm:hidden">Ver</span>
                 </button>
+                </div>
               </div>
             </div>
           );
