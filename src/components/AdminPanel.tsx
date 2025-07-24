@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Settings, Plus, Edit3, Save, X, Upload, Trash2, Eye, EyeOff, ArrowLeft } from 'lucide-react';
+import { Settings, Plus, Edit3, Save, X, Upload, Trash2, Eye, EyeOff, ArrowLeft, Video, MessageSquare } from 'lucide-react';
 import { BonusResource, BonusLesson, QuizQuestion } from '../types';
 import { bonusResources } from '../data/bonusData';
+import { OnboardingVideo, PopupContent, getOnboardingVideos, getPopupContents, saveOnboardingVideos, savePopupContents } from '../data/onboardingData';
 
 interface AdminPanelProps {
   isVisible: boolean;
@@ -52,7 +53,9 @@ export default function AdminPanel({ isVisible, onToggle, userEmail }: AdminPane
             {[
               { id: 'bonuses', label: 'Gerenciar Bônus', icon: '🎁' },
               { id: 'lessons', label: 'Gerenciar Aulas', icon: '📚' },
-              { id: 'exercises', label: 'Gerenciar Exercícios', icon: '🧠' }
+              { id: 'exercises', label: 'Gerenciar Exercícios', icon: '🧠' },
+              { id: 'onboarding', label: 'Comece por Aqui', icon: '🚀' },
+              { id: 'popups', label: 'Pop-ups', icon: '💬' }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -75,6 +78,8 @@ export default function AdminPanel({ isVisible, onToggle, userEmail }: AdminPane
           {activeTab === 'bonuses' && <BonusManagement />}
           {activeTab === 'lessons' && <LessonManagement />}
           {activeTab === 'exercises' && <ExerciseManagement />}
+          {activeTab === 'onboarding' && <OnboardingManagement />}
+          {activeTab === 'popups' && <PopupManagement />}
         </div>
       </div>
     </div>
