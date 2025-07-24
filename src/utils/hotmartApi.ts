@@ -1,6 +1,8 @@
 // 🔧 CONFIGURAÇÃO DA API DA HOTMART
 // Este arquivo contém as funções para integração com a Hotmart
 
+import { hasManualAccess } from './adminConfig';
+
 interface UserCredentials {
   email: string;
   password: string;
@@ -150,6 +152,12 @@ const searchInLocalDatabase = async (email: string): Promise<boolean> => {
 // 🔧 FUNÇÃO PRINCIPAL PARA VERIFICAR COMPRA NA HOTMART (MELHORADA)
 export const verifyHotmartPurchase = async (email: string): Promise<boolean> => {
   try {
+    // 🔧 VERIFICAR ACESSO MANUAL PRIMEIRO
+    if (hasManualAccess(email)) {
+      console.log('✅ Acesso manual encontrado para:', email);
+      return true;
+    }
+
     // 🔧 E-MAILS DE TESTE - REMOVER EM PRODUÇÃO
     const testEmails = [
       'teste@teacherpoli.com',
