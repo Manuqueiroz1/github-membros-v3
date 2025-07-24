@@ -8,14 +8,32 @@ export default function OnboardingSection() {
   const [selectedVideo, setSelectedVideo] = useState<OnboardingVideo | null>(videos[0]);
   const [showPlayer, setShowPlayer] = useState(true);
 
-  // Atualizar videos quando dados mudarem
+  // Atualizar videos quando dados mudarem e escutar mudanças do admin
   React.useEffect(() => {
-    const updatedVideos = getOnboardingVideos();
-    setVideos(updatedVideos);
-    if (!selectedVideo && updatedVideos.length > 0) {
-      setSelectedVideo(updatedVideos[0]);
-    }
-  }, []);
+    const loadVideos = () => {
+      const updatedVideos = getOnboardingVideos();
+      setVideos(updatedVideos);
+      if (!selectedVideo && updatedVideos.length > 0) {
+        setSelectedVideo(updatedVideos[0]);
+      }
+    };
+
+    // Carregar dados iniciais
+    loadVideos();
+
+    // Escutar mudanças do admin
+    const handleDataUpdate = () => {
+      loadVideos();
+    };
+
+    window.addEventListener('onboardingDataUpdated', handleDataUpdate);
+    window.addEventListener('storage', handleDataUpdate);
+
+    return () => {
+      window.removeEventListener('onboardingDataUpdated', handleDataUpdate);
+      window.removeEventListener('storage', handleDataUpdate);
+    };
+  }, [selectedVideo]);
 
   const handleVideoSelect = (video: OnboardingVideo) => {
     setSelectedVideo(video);

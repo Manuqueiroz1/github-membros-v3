@@ -10,11 +10,30 @@ interface PlanRequiredModalProps {
 }
 
 export default function PlanRequiredModal({ isOpen, onClose, onGoToPlan, tabName }: PlanRequiredModalProps) {
+  const [planRequiredContent, setPlanRequiredContent] = React.useState(() => {
+    const popupContents = getPopupContents();
+    return popupContents.find(p => p.type === 'plan-required');
+  });
+
+  // Escutar mudanças nos dados dos pop-ups
+  React.useEffect(() => {
+    const handlePopupUpdate = () => {
+      const popupContents = getPopupContents();
+      const updatedContent = popupContents.find(p => p.type === 'plan-required');
+      setPlanRequiredContent(updatedContent);
+    };
+
+    window.addEventListener('popupDataUpdated', handlePopupUpdate);
+    window.addEventListener('storage', handlePopupUpdate);
+
+    return () => {
+      window.removeEventListener('popupDataUpdated', handlePopupUpdate);
+      window.removeEventListener('storage', handlePopupUpdate);
+    };
+  }, []);
+
   if (!isOpen) return null;
 
-  const popupContents = getPopupContents();
-  const planRequiredContent = popupContents.find(p => p.type === 'plan-required');
-  
   if (!planRequiredContent) return null;
 
   const getTabDisplayName = (tabId: string) => {

@@ -6,19 +6,40 @@ import BonusDetailPage from './BonusDetailPage';
 
 export default function ResourcesSection() {
   const [selectedBonus, setSelectedBonus] = React.useState<string | null>(null);
-  const [currentBonuses, setCurrentBonuses] = React.useState(bonusResources);
+  const [currentBonuses, setCurrentBonuses] = React.useState(() => {
+    const saved = localStorage.getItem('teacherpoli_bonus_data');
+    return saved ? JSON.parse(saved) : bonusResources;
+  });
 
-  // Carregar bônus salvos do localStorage
+  // Carregar bônus salvos do localStorage e escutar mudanças
   React.useEffect(() => {
-    const savedBonuses = localStorage.getItem('teacherpoli_bonus_data');
-    if (savedBonuses) {
-      try {
-        const parsedBonuses = JSON.parse(savedBonuses);
-        setCurrentBonuses(parsedBonuses);
-      } catch (error) {
-        console.error('Erro ao carregar bônus salvos:', error);
+    const loadBonuses = () => {
+      const savedBonuses = localStorage.getItem('teacherpoli_bonus_data');
+      if (savedBonuses) {
+        try {
+          const parsedBonuses = JSON.parse(savedBonuses);
+          setCurrentBonuses(parsedBonuses);
+        } catch (error) {
+          console.error('Erro ao carregar bônus salvos:', error);
+        }
       }
-    }
+    };
+
+    // Carregar dados iniciais
+    loadBonuses();
+
+    // Escutar mudanças do admin
+    const handleStorageChange = () => {
+      loadBonuses();
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('bonusDataUpdated', loadBonuses);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('bonusDataUpdated', loadBonuses);
+    };
   }, []);
 
   if (selectedBonus) {

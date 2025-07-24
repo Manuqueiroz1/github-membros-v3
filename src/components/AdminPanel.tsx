@@ -90,7 +90,10 @@ export default function AdminPanel({ isVisible, onToggle, userEmail }: AdminPane
 function BonusManagement() {
   const [editingBonus, setEditingBonus] = useState<BonusResource | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [bonusList, setBonusList] = useState<BonusResource[]>(bonusResources);
+  const [bonusList, setBonusList] = useState<BonusResource[]>(() => {
+    const saved = localStorage.getItem('teacherpoli_bonus_data');
+    return saved ? JSON.parse(saved) : bonusResources;
+  });
 
   const handleEdit = (bonus: BonusResource) => {
     setEditingBonus({ ...bonus });
@@ -114,21 +117,25 @@ function BonusManagement() {
   };
   const handleSave = () => {
     if (editingBonus) {
+      let updatedBonusList;
       if (showAddForm) {
         // Adicionar novo bônus
-        setBonusList(prev => [...prev, editingBonus]);
+        updatedBonusList = [...bonusList, editingBonus];
+        setBonusList(updatedBonusList);
         setShowAddForm(false);
       } else {
         // Atualizar bônus existente
-        setBonusList(prev => 
-          prev.map(bonus => 
+        updatedBonusList = bonusList.map(bonus => 
             bonus.id === editingBonus.id ? editingBonus : bonus
-          )
-        );
+          );
+        setBonusList(updatedBonusList);
       }
       
       // Salvar no localStorage para persistência
-      localStorage.setItem('teacherpoli_bonus_data', JSON.stringify(bonusList));
+      localStorage.setItem('teacherpoli_bonus_data', JSON.stringify(updatedBonusList));
+      
+      // Forçar atualização na página principal
+      window.dispatchEvent(new CustomEvent('bonusDataUpdated'));
       
       console.log('Salvando bônus:', editingBonus);
       setEditingBonus(null);
@@ -143,8 +150,13 @@ function BonusManagement() {
 
   const handleDelete = (bonusId: string) => {
     if (confirm('Tem certeza que deseja excluir este bônus? Esta ação não pode ser desfeita.')) {
-      setBonusList(prev => prev.filter(bonus => bonus.id !== bonusId));
-      localStorage.setItem('teacherpoli_bonus_data', JSON.stringify(bonusList.filter(bonus => bonus.id !== bonusId)));
+      const updatedBonusList = bonusList.filter(bonus => bonus.id !== bonusId);
+      setBonusList(updatedBonusList);
+      localStorage.setItem('teacherpoli_bonus_data', JSON.stringify(updatedBonusList));
+      
+      // Forçar atualização na página principal
+      window.dispatchEvent(new CustomEvent('bonusDataUpdated'));
+      
       alert('Bônus excluído com sucesso!');
     }
   };
@@ -759,6 +771,10 @@ function OnboardingManagement() {
       
       setVideos(updatedVideos);
       saveOnboardingVideos(updatedVideos);
+      
+      // Forçar atualização na página principal
+      window.dispatchEvent(new CustomEvent('onboardingDataUpdated'));
+      
       setEditingVideo(null);
       alert(showAddForm ? 'Nova aula criada com sucesso!' : 'Aula atualizada com sucesso!');
     }
@@ -769,6 +785,10 @@ function OnboardingManagement() {
       const updatedVideos = videos.filter(video => video.id !== videoId);
       setVideos(updatedVideos);
       saveOnboardingVideos(updatedVideos);
+      
+      // Forçar atualização na página principal
+      window.dispatchEvent(new CustomEvent('onboardingDataUpdated'));
+      
       alert('Aula excluída com sucesso!');
     }
   };
@@ -936,6 +956,10 @@ function PopupManagement() {
       
       setPopups(updatedPopups);
       savePopupContents(updatedPopups);
+      
+      // Forçar atualização na página principal
+      window.dispatchEvent(new CustomEvent('popupDataUpdated'));
+      
       setEditingPopup(null);
       alert('Pop-up atualizado com sucesso!');
     }

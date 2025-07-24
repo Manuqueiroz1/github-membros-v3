@@ -10,11 +10,30 @@ interface WelcomeModalProps {
 }
 
 export default function WelcomeModal({ isOpen, onClose, userName }: WelcomeModalProps) {
+  const [welcomeContent, setWelcomeContent] = React.useState(() => {
+    const popupContents = getPopupContents();
+    return popupContents.find(p => p.type === 'welcome');
+  });
+
+  // Escutar mudanças nos dados dos pop-ups
+  React.useEffect(() => {
+    const handlePopupUpdate = () => {
+      const popupContents = getPopupContents();
+      const updatedContent = popupContents.find(p => p.type === 'welcome');
+      setWelcomeContent(updatedContent);
+    };
+
+    window.addEventListener('popupDataUpdated', handlePopupUpdate);
+    window.addEventListener('storage', handlePopupUpdate);
+
+    return () => {
+      window.removeEventListener('popupDataUpdated', handlePopupUpdate);
+      window.removeEventListener('storage', handlePopupUpdate);
+    };
+  }, []);
+
   if (!isOpen) return null;
 
-  const popupContents = getPopupContents();
-  const welcomeContent = popupContents.find(p => p.type === 'welcome');
-  
   if (!welcomeContent) return null;
 
   return (
