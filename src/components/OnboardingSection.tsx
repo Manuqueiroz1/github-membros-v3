@@ -1,53 +1,23 @@
 import React, { useState } from 'react';
 import { Play, CheckCircle, Clock } from 'lucide-react';
 import SupportButton from './SupportButton';
-
-interface Video {
-  id: string;
-  title: string;
-  description: string;
-  duration: string;
-  completed: boolean;
-  locked: boolean;
-  embedUrl: string;
-}
-
-const onboardingVideos: Video[] = [
-  {
-    id: '1',
-    title: 'Bem-vindo à Teacher Poli',
-    description: 'Conheça a plataforma e como ela pode transformar seu aprendizado',
-    duration: '2:02',
-    completed: false,
-    locked: false,
-    embedUrl: 'https://www.youtube.com/embed/mttHTuEK5Xs'
-  },
-  {
-    id: '2',
-    title: 'Nossa Cultura e Valores',
-    description: 'Conheça tudo aquilo que nos guia',
-    duration: '3:33',
-    completed: false,
-    locked: false,
-    embedUrl: 'https://www.youtube.com/embed/-6J-tNXZkQc'
-  },
-  {
-    id: '3',
-    title: 'Passo a Passo: Primeiro Acesso',
-    description: 'Como encontrar tudo que precisa para acessar pela primeira vez',
-    duration: '00:57',
-    completed: false,
-    locked: false,
-    embedUrl: 'https://www.youtube.com/embed/povotikiPeg'
-  },
-];
+import { OnboardingVideo, getOnboardingVideos, saveOnboardingVideos } from '../data/onboardingData';
 
 export default function OnboardingSection() {
-  const [selectedVideo, setSelectedVideo] = useState<Video | null>(onboardingVideos[0]);
+  const [videos, setVideos] = useState<OnboardingVideo[]>(getOnboardingVideos());
+  const [selectedVideo, setSelectedVideo] = useState<OnboardingVideo | null>(videos[0]);
   const [showPlayer, setShowPlayer] = useState(true);
-  const [videos, setVideos] = useState<Video[]>(onboardingVideos);
 
-  const handleVideoSelect = (video: Video) => {
+  // Atualizar videos quando dados mudarem
+  React.useEffect(() => {
+    const updatedVideos = getOnboardingVideos();
+    setVideos(updatedVideos);
+    if (!selectedVideo && updatedVideos.length > 0) {
+      setSelectedVideo(updatedVideos[0]);
+    }
+  }, []);
+
+  const handleVideoSelect = (video: OnboardingVideo) => {
     setSelectedVideo(video);
     setShowPlayer(true);
   };
@@ -60,6 +30,14 @@ export default function OnboardingSection() {
           : video
       )
     );
+    
+    // Salvar no localStorage
+    const updatedVideos = videos.map(video => 
+      video.id === videoId 
+        ? { ...video, completed: true }
+        : video
+    );
+    saveOnboardingVideos(updatedVideos);
     
     // Update selected video if it's the one being marked as completed
     if (selectedVideo?.id === videoId) {

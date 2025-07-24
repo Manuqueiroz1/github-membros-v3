@@ -1,6 +1,7 @@
 import React from 'react';
 import { X, Heart, Sparkles, Target, Users } from 'lucide-react';
 import SupportButton from './SupportButton';
+import { getPopupContents } from '../data/onboardingData';
 
 interface WelcomeModalProps {
   isOpen: boolean;
@@ -10,6 +11,11 @@ interface WelcomeModalProps {
 
 export default function WelcomeModal({ isOpen, onClose, userName }: WelcomeModalProps) {
   if (!isOpen) return null;
+
+  const popupContents = getPopupContents();
+  const welcomeContent = popupContents.find(p => p.type === 'welcome');
+  
+  if (!welcomeContent) return null;
 
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
@@ -28,10 +34,10 @@ export default function WelcomeModal({ isOpen, onClose, userName }: WelcomeModal
           </div>
           
           <h2 className="text-2xl sm:text-3xl font-bold mb-2">
-            Bem-vindo(a), {userName}! 🎉
+            {welcomeContent.title.replace('{userName}', userName)}
           </h2>
           <p className="text-purple-100 text-sm sm:text-base">
-            Estamos muito felizes em tê-lo(a) conosco na Teacher Poli
+            {welcomeContent.subtitle}
           </p>
         </div>
 
@@ -39,57 +45,27 @@ export default function WelcomeModal({ isOpen, onClose, userName }: WelcomeModal
         <div className="p-6 sm:p-8">
           <div className="text-center mb-8">
             <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              Preparamos tudo com muito carinho para você! ❤️
+              {welcomeContent.subtitle}
             </h3>
             <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base leading-relaxed">
-              Para que você tire o máximo proveito de todos os recursos da nossa plataforma, 
-              criamos uma jornada especial de boas-vindas.
+              {welcomeContent.description}
             </p>
           </div>
 
           {/* Steps */}
           <div className="space-y-6 mb-8">
-            <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-purple-600 font-bold">1</span>
+            {welcomeContent.features.map((feature, index) => (
+              <div key={index} className="flex items-start space-x-4">
+                <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
+                  <span className="text-purple-600 font-bold">{index + 1}</span>
+                </div>
+                <div>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
+                    {feature}
+                  </p>
+                </div>
               </div>
-              <div>
-                <h4 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  Comece por Aqui
-                </h4>
-                <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
-                  Assista aos vídeos de boas-vindas para entender como funciona a plataforma
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-purple-600 font-bold">2</span>
-              </div>
-              <div>
-                <h4 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  🎯 Gere seu Plano Personalizado (IMPORTANTE!)
-                </h4>
-                <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
-                  Nossa IA criará um plano único para você. **Sem isso, a Teacher Poli não consegue te ajudar da melhor forma!** É rápido e essencial para sua experiência.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-4">
-              <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <span className="text-green-600 font-bold">3</span>
-              </div>
-              <div>
-                <h4 className="text-base sm:text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                  🔓 Acesso Completo Liberado!
-                </h4>
-                <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base">
-                  **Instantaneamente** após gerar seu plano: Teacher Poli personalizada, Bônus Exclusivos, Comunidade WhatsApp e muito mais!
-                </p>
-              </div>
-            </div>
+            ))}
           </div>
 
           {/* Features Preview */}
@@ -123,7 +99,7 @@ export default function WelcomeModal({ isOpen, onClose, userName }: WelcomeModal
               onClick={onClose}
               className="bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-purple-700 hover:to-pink-700 transition-all transform hover:scale-105 shadow-lg"
             >
-              Vamos começar! 🚀
+              {welcomeContent.buttonText}
             </button>
             
             {/* Support Section */}

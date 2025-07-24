@@ -721,26 +721,25 @@ function ExerciseManagement() {
   );
 }
 
-// Componente para gerenciar vídeos de onboarding
+// Componente para gerenciar área "Comece por Aqui"
 function OnboardingManagement() {
   const [videos, setVideos] = useState<OnboardingVideo[]>(getOnboardingVideos());
   const [editingVideo, setEditingVideo] = useState<OnboardingVideo | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
 
-  const handleEdit = (video: OnboardingVideo) => {
+  const handleEditVideo = (video: OnboardingVideo) => {
     setEditingVideo({ ...video });
   };
 
   const handleAddNew = () => {
     const newVideo: OnboardingVideo = {
       id: `video-${Date.now()}`,
-      title: 'Novo Vídeo',
-      description: 'Descrição do novo vídeo',
-      videoUrl: '',
-      thumbnail: 'https://images.pexels.com/photos/4145190/pexels-photo-4145190.jpeg?auto=compress&cs=tinysrgb&w=800',
+      title: 'Nova Aula',
+      description: 'Descrição da nova aula',
       duration: '0:00',
-      order: videos.length + 1,
-      isVisible: true
+      completed: false,
+      locked: false,
+      embedUrl: 'https://www.youtube.com/embed/'
     };
     setEditingVideo(newVideo);
     setShowAddForm(true);
@@ -761,7 +760,16 @@ function OnboardingManagement() {
       setVideos(updatedVideos);
       saveOnboardingVideos(updatedVideos);
       setEditingVideo(null);
-      alert(showAddForm ? 'Novo vídeo criado com sucesso!' : 'Vídeo atualizado com sucesso!');
+      alert(showAddForm ? 'Nova aula criada com sucesso!' : 'Aula atualizada com sucesso!');
+    }
+  };
+
+  const handleDelete = (videoId: string) => {
+    if (confirm('Tem certeza que deseja excluir esta aula? Esta ação não pode ser desfeita.')) {
+      const updatedVideos = videos.filter(video => video.id !== videoId);
+      setVideos(updatedVideos);
+      saveOnboardingVideos(updatedVideos);
+      alert('Aula excluída com sucesso!');
     }
   };
 
@@ -770,33 +778,16 @@ function OnboardingManagement() {
     setShowAddForm(false);
   };
 
-  const handleDelete = (videoId: string) => {
-    if (confirm('Tem certeza que deseja excluir este vídeo? Esta ação não pode ser desfeita.')) {
-      const updatedVideos = videos.filter(video => video.id !== videoId);
-      setVideos(updatedVideos);
-      saveOnboardingVideos(updatedVideos);
-      alert('Vídeo excluído com sucesso!');
-    }
-  };
-
-  const toggleVisibility = (videoId: string) => {
-    const updatedVideos = videos.map(video => 
-      video.id === videoId ? { ...video, isVisible: !video.isVisible } : video
-    );
-    setVideos(updatedVideos);
-    saveOnboardingVideos(updatedVideos);
-  };
-
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg font-semibold">Gerenciar Vídeos - Comece por Aqui</h3>
+        <h3 className="text-lg font-semibold">Gerenciar "Comece por Aqui"</h3>
         <button
           onClick={handleAddNew}
           className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center"
         >
           <Plus className="h-4 w-4 mr-2" />
-          Adicionar Vídeo
+          Adicionar Aula
         </button>
       </div>
 
@@ -804,7 +795,7 @@ function OnboardingManagement() {
         <div className="bg-gray-50 rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
             <h4 className="text-lg font-semibold">
-              {showAddForm ? 'Criando Novo Vídeo' : `Editando: ${editingVideo.title}`}
+              {showAddForm ? 'Criando Nova Aula' : `Editando: ${editingVideo.title}`}
             </h4>
             <button
               onClick={handleCancel}
@@ -832,7 +823,7 @@ function OnboardingManagement() {
                 value={editingVideo.duration}
                 onChange={(e) => setEditingVideo({ ...editingVideo, duration: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="Ex: 15:30"
+                placeholder="Ex: 5:30"
               />
             </div>
 
@@ -847,37 +838,25 @@ function OnboardingManagement() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">URL do Vídeo</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">URL do Vídeo (YouTube Embed)</label>
               <input
                 type="url"
-                value={editingVideo.videoUrl}
-                onChange={(e) => setEditingVideo({ ...editingVideo, videoUrl: e.target.value })}
+                value={editingVideo.embedUrl}
+                onChange={(e) => setEditingVideo({ ...editingVideo, embedUrl: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-                placeholder="https://www.youtube.com/embed/..."
+                placeholder="https://www.youtube.com/embed/VIDEO_ID"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Ordem</label>
-              <input
-                type="number"
-                min="1"
-                value={editingVideo.order}
-                onChange={(e) => setEditingVideo({ ...editingVideo, order: parseInt(e.target.value) || 1 })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              />
-            </div>
-
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="isVisible"
-                checked={editingVideo.isVisible}
-                onChange={(e) => setEditingVideo({ ...editingVideo, isVisible: e.target.checked })}
-                className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
-              />
-              <label htmlFor="isVisible" className="ml-2 block text-sm text-gray-900">
-                Vídeo visível para os usuários
+              <label className="flex items-center">
+                <input
+                  type="checkbox"
+                  checked={editingVideo.locked}
+                  onChange={(e) => setEditingVideo({ ...editingVideo, locked: e.target.checked })}
+                  className="mr-2"
+                />
+                <span className="text-sm font-medium text-gray-700">Aula bloqueada</span>
               </label>
             </div>
           </div>
@@ -894,44 +873,30 @@ function OnboardingManagement() {
               className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center"
             >
               <Save className="h-4 w-4 mr-2" />
-              {showAddForm ? 'Criar Vídeo' : 'Salvar Alterações'}
+              {showAddForm ? 'Criar Aula' : 'Salvar Alterações'}
             </button>
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {videos
-            .sort((a, b) => a.order - b.order)
-            .map((video) => (
+        <div className="space-y-4">
+          {videos.map((video, index) => (
             <div key={video.id} className="bg-white border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-xs bg-gray-100 px-2 py-1 rounded">#{video.order}</span>
-                <button
-                  onClick={() => toggleVisibility(video.id)}
-                  className={`p-1 rounded ${video.isVisible ? 'text-green-600 hover:text-green-800' : 'text-gray-400 hover:text-gray-600'}`}
-                  title={video.isVisible ? 'Vídeo visível' : 'Vídeo oculto'}
-                >
-                  {video.isVisible ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-                </button>
-              </div>
-              
-              <img 
-                src={video.thumbnail} 
-                alt={video.title}
-                className="w-full h-32 object-cover rounded-lg mb-3"
-              />
-              <h4 className="font-semibold text-gray-900 mb-2">{video.title}</h4>
-              <p className="text-sm text-gray-600 mb-3 line-clamp-2">{video.description}</p>
-              <div className="flex justify-between items-center">
-                <div className="text-xs text-gray-500">
-                  <div className="flex items-center">
-                    <Video className="h-3 w-3 mr-1" />
-                    {video.duration}
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <h4 className="font-semibold text-gray-900 mb-1">
+                    {index + 1}. {video.title}
+                  </h4>
+                  <p className="text-sm text-gray-600 mb-2">{video.description}</p>
+                  <div className="flex items-center space-x-4 text-xs text-gray-500">
+                    <span>⏱️ {video.duration}</span>
+                    <span className={video.locked ? 'text-red-600' : 'text-green-600'}>
+                      {video.locked ? '🔒 Bloqueada' : '🔓 Liberada'}
+                    </span>
                   </div>
                 </div>
                 <div className="flex space-x-2">
                   <button
-                    onClick={() => handleEdit(video)}
+                    onClick={() => handleEditVideo(video)}
                     className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700 transition-colors flex items-center"
                   >
                     <Edit3 className="h-3 w-3 mr-1" />
@@ -958,85 +923,71 @@ function OnboardingManagement() {
 function PopupManagement() {
   const [popups, setPopups] = useState<PopupContent[]>(getPopupContents());
   const [editingPopup, setEditingPopup] = useState<PopupContent | null>(null);
-  const [showAddForm, setShowAddForm] = useState(false);
 
-  const handleEdit = (popup: PopupContent) => {
+  const handleEditPopup = (popup: PopupContent) => {
     setEditingPopup({ ...popup });
-  };
-
-  const handleAddNew = () => {
-    const newPopup: PopupContent = {
-      id: `popup-${Date.now()}`,
-      title: 'Novo Pop-up',
-      message: 'Mensagem do novo pop-up',
-      type: 'info',
-      isActive: true,
-      showOnPages: ['dashboard'],
-      frequency: 'once'
-    };
-    setEditingPopup(newPopup);
-    setShowAddForm(true);
   };
 
   const handleSave = () => {
     if (editingPopup) {
-      let updatedPopups;
-      if (showAddForm) {
-        updatedPopups = [...popups, editingPopup];
-        setShowAddForm(false);
-      } else {
-        updatedPopups = popups.map(popup => 
-          popup.id === editingPopup.id ? editingPopup : popup
-        );
-      }
+      const updatedPopups = popups.map(popup => 
+        popup.id === editingPopup.id ? editingPopup : popup
+      );
       
       setPopups(updatedPopups);
       savePopupContents(updatedPopups);
       setEditingPopup(null);
-      alert(showAddForm ? 'Novo pop-up criado com sucesso!' : 'Pop-up atualizado com sucesso!');
+      alert('Pop-up atualizado com sucesso!');
     }
   };
 
   const handleCancel = () => {
     setEditingPopup(null);
-    setShowAddForm(false);
   };
 
-  const handleDelete = (popupId: string) => {
-    if (confirm('Tem certeza que deseja excluir este pop-up? Esta ação não pode ser desfeita.')) {
-      const updatedPopups = popups.filter(popup => popup.id !== popupId);
-      setPopups(updatedPopups);
-      savePopupContents(updatedPopups);
-      alert('Pop-up excluído com sucesso!');
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file && editingPopup) {
+      const imageUrl = URL.createObjectURL(file);
+      setEditingPopup({ ...editingPopup, imageUrl });
     }
   };
 
-  const toggleActive = (popupId: string) => {
-    const updatedPopups = popups.map(popup => 
-      popup.id === popupId ? { ...popup, isActive: !popup.isActive } : popup
-    );
-    setPopups(updatedPopups);
-    savePopupContents(updatedPopups);
+  const addFeature = () => {
+    if (editingPopup) {
+      setEditingPopup({
+        ...editingPopup,
+        features: [...editingPopup.features, '']
+      });
+    }
+  };
+
+  const removeFeature = (index: number) => {
+    if (editingPopup && editingPopup.features.length > 1) {
+      const newFeatures = editingPopup.features.filter((_, i) => i !== index);
+      setEditingPopup({ ...editingPopup, features: newFeatures });
+    }
+  };
+
+  const updateFeature = (index: number, value: string) => {
+    if (editingPopup) {
+      const newFeatures = [...editingPopup.features];
+      newFeatures[index] = value;
+      setEditingPopup({ ...editingPopup, features: newFeatures });
+    }
   };
 
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-lg font-semibold">Gerenciar Pop-ups</h3>
-        <button
-          onClick={handleAddNew}
-          className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center"
-        >
-          <Plus className="h-4 w-4 mr-2" />
-          Adicionar Pop-up
-        </button>
       </div>
 
       {editingPopup ? (
         <div className="bg-gray-50 rounded-lg p-6">
           <div className="flex items-center justify-between mb-4">
             <h4 className="text-lg font-semibold">
-              {showAddForm ? 'Criando Novo Pop-up' : `Editando: ${editingPopup.title}`}
+              Editando: {editingPopup.type === 'welcome' ? 'Pop-up de Boas-vindas' : 'Pop-up Plano Obrigatório'}
             </h4>
             <button
               onClick={handleCancel}
@@ -1046,66 +997,114 @@ function PopupManagement() {
             </button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Título</label>
-              <input
-                type="text"
-                value={editingPopup.title}
-                onChange={(e) => setEditingPopup({ ...editingPopup, title: e.target.value })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              />
+          <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Título Principal</label>
+                <input
+                  type="text"
+                  value={editingPopup.title}
+                  onChange={(e) => setEditingPopup({ ...editingPopup, title: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  placeholder="Use {userName} para nome do usuário"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Subtítulo</label>
+                <input
+                  type="text"
+                  value={editingPopup.subtitle}
+                  onChange={(e) => setEditingPopup({ ...editingPopup, subtitle: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                />
+              </div>
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Tipo</label>
-              <select
-                value={editingPopup.type}
-                onChange={(e) => setEditingPopup({ ...editingPopup, type: e.target.value as any })}
-                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              >
-                <option value="info">Informação</option>
-                <option value="warning">Aviso</option>
-                <option value="success">Sucesso</option>
-                <option value="error">Erro</option>
-              </select>
-            </div>
-
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">Mensagem</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Descrição</label>
               <textarea
-                value={editingPopup.message}
-                onChange={(e) => setEditingPopup({ ...editingPopup, message: e.target.value })}
+                value={editingPopup.description}
+                onChange={(e) => setEditingPopup({ ...editingPopup, description: e.target.value })}
                 rows={4}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Frequência</label>
-              <select
-                value={editingPopup.frequency}
-                onChange={(e) => setEditingPopup({ ...editingPopup, frequency: e.target.value as any })}
+              <label className="block text-sm font-medium text-gray-700 mb-2">Texto do Botão</label>
+              <input
+                type="text"
+                value={editingPopup.buttonText}
+                onChange={(e) => setEditingPopup({ ...editingPopup, buttonText: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
-              >
-                <option value="once">Uma vez</option>
-                <option value="daily">Diariamente</option>
-                <option value="weekly">Semanalmente</option>
-                <option value="always">Sempre</option>
-              </select>
+              />
             </div>
 
-            <div className="flex items-center">
-              <input
-                type="checkbox"
-                id="isActive"
-                checked={editingPopup.isActive}
-                onChange={(e) => setEditingPopup({ ...editingPopup, isActive: e.target.checked })}
-                className="h-4 w-4 text-red-600 focus:ring-red-500 border-gray-300 rounded"
-              />
-              <label htmlFor="isActive" className="ml-2 block text-sm text-gray-900">
-                Pop-up ativo
-              </label>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Características/Benefícios</label>
+              {editingPopup.features.map((feature, index) => (
+                <div key={index} className="flex items-center space-x-2 mb-2">
+                  <input
+                    type="text"
+                    value={feature}
+                    onChange={(e) => updateFeature(index, e.target.value)}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    placeholder={`Característica ${index + 1}`}
+                  />
+                  {editingPopup.features.length > 1 && (
+                    <button
+                      onClick={() => removeFeature(index)}
+                      className="text-red-600 hover:text-red-800 p-1"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </button>
+                  )}
+                </div>
+              ))}
+              <button
+                onClick={addFeature}
+                className="text-red-600 hover:text-red-800 text-sm flex items-center"
+              >
+                <Plus className="h-4 w-4 mr-1" />
+                Adicionar Característica
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Imagem</label>
+                <div className="flex items-center space-x-4">
+                  {editingPopup.imageUrl && (
+                    <img 
+                      src={editingPopup.imageUrl} 
+                      alt="Preview" 
+                      className="w-20 h-20 object-cover rounded-lg"
+                    />
+                  )}
+                  <label className="bg-gray-100 hover:bg-gray-200 px-4 py-2 rounded-lg cursor-pointer transition-colors">
+                    <Upload className="h-4 w-4 inline mr-2" />
+                    {editingPopup.imageUrl ? 'Alterar Imagem' : 'Adicionar Imagem'}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      className="hidden"
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">URL do Vídeo (opcional)</label>
+                <input
+                  type="url"
+                  value={editingPopup.videoUrl || ''}
+                  onChange={(e) => setEditingPopup({ ...editingPopup, videoUrl: e.target.value })}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                  placeholder="https://www.youtube.com/embed/VIDEO_ID"
+                />
+              </div>
             </div>
           </div>
 
@@ -1121,57 +1120,41 @@ function PopupManagement() {
               className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center"
             >
               <Save className="h-4 w-4 mr-2" />
-              {showAddForm ? 'Criar Pop-up' : 'Salvar Alterações'}
+              Salvar Alterações
             </button>
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {popups.map((popup) => (
-            <div key={popup.id} className="bg-white border border-gray-200 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-2">
-                <span className={`text-xs px-2 py-1 rounded ${
-                  popup.type === 'info' ? 'bg-blue-100 text-blue-800' :
-                  popup.type === 'warning' ? 'bg-yellow-100 text-yellow-800' :
-                  popup.type === 'success' ? 'bg-green-100 text-green-800' :
-                  'bg-red-100 text-red-800'
-                }`}>
-                  {popup.type}
-                </span>
+            <div key={popup.id} className="bg-white border border-gray-200 rounded-lg p-6">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center space-x-3">
+                  <div className="w-10 h-10 bg-purple-100 rounded-full flex items-center justify-center">
+                    <MessageSquare className="h-5 w-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <h4 className="font-semibold text-gray-900">
+                      {popup.type === 'welcome' ? 'Pop-up de Boas-vindas' : 'Pop-up Plano Obrigatório'}
+                    </h4>
+                    <p className="text-sm text-gray-500">{popup.id}</p>
+                  </div>
+                </div>
                 <button
-                  onClick={() => toggleActive(popup.id)}
-                  className={`p-1 rounded ${popup.isActive ? 'text-green-600 hover:text-green-800' : 'text-gray-400 hover:text-gray-600'}`}
-                  title={popup.isActive ? 'Pop-up ativo' : 'Pop-up inativo'}
+                  onClick={() => handleEditPopup(popup)}
+                  className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700 transition-colors flex items-center"
                 >
-                  {popup.isActive ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
+                  <Edit3 className="h-3 w-3 mr-1" />
+                  Editar
                 </button>
               </div>
               
-              <h4 className="font-semibold text-gray-900 mb-2">{popup.title}</h4>
-              <p className="text-sm text-gray-600 mb-3 line-clamp-3">{popup.message}</p>
-              <div className="flex justify-between items-center">
-                <div className="text-xs text-gray-500">
-                  <div className="flex items-center">
-                    <MessageSquare className="h-3 w-3 mr-1" />
-                    {popup.frequency}
-                  </div>
-                </div>
-                <div className="flex space-x-2">
-                  <button
-                    onClick={() => handleEdit(popup)}
-                    className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700 transition-colors flex items-center"
-                  >
-                    <Edit3 className="h-3 w-3 mr-1" />
-                    Editar
-                  </button>
-                  <button
-                    onClick={() => handleDelete(popup.id)}
-                    className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700 transition-colors flex items-center"
-                  >
-                    <Trash2 className="h-3 w-3 mr-1" />
-                    Excluir
-                  </button>
-                </div>
+              <div className="space-y-2 text-sm text-gray-600">
+                <p><strong>Título:</strong> {popup.title}</p>
+                <p><strong>Características:</strong> {popup.features.length} itens</p>
+                <p><strong>Botão:</strong> {popup.buttonText}</p>
+                {popup.imageUrl && <p><strong>Imagem:</strong> ✅ Configurada</p>}
+                {popup.videoUrl && <p><strong>Vídeo:</strong> ✅ Configurado</p>}
               </div>
             </div>
           ))}

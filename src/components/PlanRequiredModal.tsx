@@ -1,5 +1,6 @@
 import React from 'react';
 import { X, Brain, Sparkles, Target, Heart } from 'lucide-react';
+import { getPopupContents } from '../data/onboardingData';
 
 interface PlanRequiredModalProps {
   isOpen: boolean;
@@ -10,6 +11,11 @@ interface PlanRequiredModalProps {
 
 export default function PlanRequiredModal({ isOpen, onClose, onGoToPlan, tabName }: PlanRequiredModalProps) {
   if (!isOpen) return null;
+
+  const popupContents = getPopupContents();
+  const planRequiredContent = popupContents.find(p => p.type === 'plan-required');
+  
+  if (!planRequiredContent) return null;
 
   const getTabDisplayName = (tabId: string) => {
     switch (tabId) {
@@ -38,10 +44,10 @@ export default function PlanRequiredModal({ isOpen, onClose, onGoToPlan, tabName
           </div>
           
           <h2 className="text-2xl sm:text-3xl font-bold mb-2">
-            Quase lá! 🎯
+            {planRequiredContent.title}
           </h2>
           <p className="text-purple-100 text-sm sm:text-base">
-            Para acessar <strong>{getTabDisplayName(tabName)}</strong>
+            Para acessar <strong>{getTabDisplayName(tabName)}</strong> - {planRequiredContent.subtitle}
           </p>
         </div>
 
@@ -49,33 +55,25 @@ export default function PlanRequiredModal({ isOpen, onClose, onGoToPlan, tabName
         <div className="p-6 sm:p-8">
           <div className="text-center mb-8">
             <h3 className="text-xl sm:text-2xl font-bold text-gray-900 dark:text-white mb-4">
-              Primeiro, precisamos criar seu plano personalizado! ✨
+              {planRequiredContent.subtitle}
             </h3>
             <p className="text-gray-600 dark:text-gray-300 text-sm sm:text-base leading-relaxed mb-6">
-              <strong>Por que isso é importante?</strong> A Teacher Poli precisa conhecer você para se tornar a 
-              <span className="text-purple-600 font-semibold"> Melhor Professora de Inglês do Mundo</span> personalizada 
-              para suas necessidades específicas.
+              {planRequiredContent.description}
             </p>
           </div>
 
           {/* Benefits */}
           <div className="bg-gradient-to-r from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl p-6 mb-8">
             <h4 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 text-center">
-              Com seu plano personalizado, você terá:
+              Benefícios do seu plano personalizado:
             </h4>
             <div className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <Sparkles className="h-5 w-5 text-purple-600 flex-shrink-0" />
-                <span className="text-sm text-gray-700 dark:text-gray-300">Teacher Poli adaptada ao seu nível e objetivos</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Target className="h-5 w-5 text-purple-600 flex-shrink-0" />
-                <span className="text-sm text-gray-700 dark:text-gray-300">Conteúdo personalizado para suas necessidades</span>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Heart className="h-5 w-5 text-purple-600 flex-shrink-0" />
-                <span className="text-sm text-gray-700 dark:text-gray-300">Experiência única criada especialmente para você</span>
-              </div>
+              {planRequiredContent.features.map((feature, index) => (
+                <div key={index} className="flex items-center space-x-3">
+                  <Sparkles className="h-5 w-5 text-purple-600 flex-shrink-0" />
+                  <span className="text-sm text-gray-700 dark:text-gray-300">{feature}</span>
+                </div>
+              ))}
             </div>
           </div>
 
@@ -85,7 +83,7 @@ export default function PlanRequiredModal({ isOpen, onClose, onGoToPlan, tabName
               onClick={onGoToPlan}
               className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white px-8 py-4 rounded-xl font-semibold text-lg hover:from-purple-700 hover:to-pink-700 transition-all transform hover:scale-105 shadow-lg"
             >
-              Criar Meu Plano Agora! 🚀
+              {planRequiredContent.buttonText}
             </button>
             
             <button
