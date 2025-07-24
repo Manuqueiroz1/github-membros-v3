@@ -57,3 +57,21 @@ export interface BonusResource {
   rating: number;
   downloads: number;
 }
+
+export interface AdminUser {
+  email: string;
+  permissions: AdminPermission[];
+}
+
+export type AdminPermission = 
+  | 'edit_content' 
+  | 'add_lessons' 
+  | 'manage_users' 
+  | 'edit_bonuses' 
+  | 'manage_settings';
+
+export interface EditableContent {
+  id: string;
+  type: 'lesson' | 'bonus' | 'exercise';
+  content: any;
+}

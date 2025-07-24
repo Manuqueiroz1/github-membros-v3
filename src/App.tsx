@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { User } from './types';
 import WelcomeModal from './components/WelcomeModal';
+import AdminPanel from './components/AdminPanel';
+import { isAdmin } from './utils/adminConfig';
 
 // Components
 import Header from './components/Header';
@@ -29,6 +31,7 @@ export default function App() {
   const [showWelcomeModal, setShowWelcomeModal] = useState(false);
   const [showPlanRequiredModal, setShowPlanRequiredModal] = useState(false);
   const [blockedTabName, setBlockedTabName] = useState('');
+  const [showAdminPanel, setShowAdminPanel] = useState(false);
 
   // Show welcome modal for first-time users
   React.useEffect(() => {
@@ -122,7 +125,7 @@ export default function App() {
     
     // Only lock tabs on first access AND if user hasn't generated a plan yet
     if (user.firstAccess && !user.hasGeneratedPlan) {
-      return ['teacher-poli', 'resources', 'community'];
+      return ['teacher-poli', 'resources', 'community']; // settings is now always unlocked
     }
     
     return [];
@@ -152,7 +155,12 @@ export default function App() {
   return (
     <>
       <div className="min-h-screen bg-gray-50 dark:bg-gray-900">
-        <Header userName={user.name} onLogout={handleLogout} />
+        <Header 
+          userName={user.name} 
+          userEmail={user.email}
+          onLogout={handleLogout}
+          onAdminPanel={() => setShowAdminPanel(true)}
+        />
         <Navigation 
           activeTab={activeTab} 
           onTabChange={setActiveTab}
@@ -186,6 +194,15 @@ export default function App() {
         onGoToPlan={handleGoToPlan}
         tabName={blockedTabName}
       />
+
+      {/* Admin Panel - Only for administrators */}
+      {user && isAdmin(user.email) && (
+        <AdminPanel
+          isVisible={showAdminPanel}
+          onToggle={() => setShowAdminPanel(!showAdminPanel)}
+          userEmail={user.email}
+        />
+      )}
     </>
   );
 }
