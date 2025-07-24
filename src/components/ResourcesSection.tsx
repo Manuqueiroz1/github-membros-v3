@@ -70,7 +70,10 @@ export default function ResourcesSection() {
             <p className="text-purple-100 mb-6 text-sm sm:text-base">
               Um programa completo para acelerar seu aprendizado de inglês
             </p>
-            <button className="inline-flex items-center px-4 sm:px-6 py-3 bg-white text-purple-600 text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-100 transition-colors">
+            <button 
+              onClick={() => setSelectedBonus('curso-intensivo-30-dias')}
+              className="inline-flex items-center px-4 sm:px-6 py-3 bg-white text-purple-600 text-sm sm:text-base font-semibold rounded-lg hover:bg-gray-100 transition-colors"
+            >
               <Play className="mr-2 h-4 w-4" />
               <span className="hidden sm:inline">Acessar Curso</span>
               <span className="sm:hidden">Acessar</span>

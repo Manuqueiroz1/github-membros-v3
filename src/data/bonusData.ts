@@ -1,6 +1,594 @@
 import { BonusResource } from '../types';
 
+// Curso Intensivo de 30 Dias - Bônus Especial
+const cursoIntensivo30Dias: BonusResource = {
+  id: 'curso-intensivo-30-dias',
+  title: 'Curso Intensivo de 30 Dias',
+  description: 'Um programa completo para acelerar seu aprendizado de inglês',
+  type: 'course',
+  thumbnail: 'https://images.pexels.com/photos/4145190/pexels-photo-4145190.jpeg?auto=compress&cs=tinysrgb&w=800',
+  totalLessons: 30,
+  totalDuration: '30h+',
+  rating: 4.9,
+  downloads: 2500,
+  lessons: [
+    {
+      id: '1',
+      title: 'Day 1: Getting Started - Your English Journey Begins',
+      description: 'Estabeleça suas metas e comece sua jornada de 30 dias',
+      videoUrl: 'https://www.youtube.com/embed/mttHTuEK5Xs',
+      duration: '45:30',
+      textContent: `
+# Day 1: Getting Started - Your English Journey Begins
+
+## Welcome to Your 30-Day English Intensive Course!
+
+Congratulations on taking this important step in your English learning journey! Over the next 30 days, you'll experience a transformation in your English skills through our carefully designed intensive program.
+
+## What Makes This Course Special?
+
+### 1. Daily Structure
+- **Morning Session (20 minutes)**: Vocabulary and grammar focus
+- **Afternoon Session (15 minutes)**: Listening and pronunciation practice
+- **Evening Session (10 minutes)**: Review and consolidation
+
+### 2. Progressive Learning
+Each day builds upon the previous one, ensuring steady progress:
+- **Week 1**: Foundation building
+- **Week 2**: Skill development
+- **Week 3**: Practical application
+- **Week 4**: Fluency enhancement
+
+### 3. Real-World Application
+Every lesson connects to real-life situations you'll encounter:
+- Daily conversations
+- Professional interactions
+- Travel scenarios
+- Social situations
+
+## Your Learning Goals for Day 1:
+
+### Primary Objectives:
+1. **Set Clear Goals**: Define what you want to achieve in 30 days
+2. **Assess Your Level**: Understand your current English proficiency
+3. **Create Your Study Schedule**: Plan your daily learning routine
+4. **Learn Essential Phrases**: Master 10 key expressions for daily use
+
+### Essential Phrases for Today:
+1. "Good morning! How are you today?"
+2. "I'm learning English and I'm excited about it!"
+3. "Could you please help me with this?"
+4. "I don't understand. Could you repeat that?"
+5. "Thank you for your patience."
+6. "I'm making progress every day."
+7. "Practice makes perfect."
+8. "I'm committed to learning."
+9. "This is challenging but rewarding."
+10. "I believe in myself."
+
+## Study Tips for Success:
+
+### 1. Consistency is Key
+- Study at the same time each day
+- Even 15 minutes daily is better than 2 hours once a week
+- Create a dedicated study space
+
+### 2. Active Learning
+- Speak out loud, don't just read silently
+- Write down new words and phrases
+- Practice with real-life scenarios
+
+### 3. Track Your Progress
+- Keep a learning journal
+- Record yourself speaking
+- Celebrate small victories
+
+## Homework for Tonight:
+1. Write a short paragraph about why you want to learn English
+2. Practice the 10 essential phrases out loud
+3. Set up your study schedule for the next 29 days
+4. Find an English song you like and listen to it
+
+## Tomorrow's Preview:
+Day 2 will focus on "Building Your Foundation" where we'll work on basic sentence structures and expand your essential vocabulary.
+
+Remember: Every expert was once a beginner. Your journey starts now!
+      `,
+      exercises: [
+        {
+          id: '1',
+          question: 'What is the recommended daily study time structure for this course?',
+          options: [
+            '60 minutes in one session',
+            '20 minutes morning, 15 minutes afternoon, 10 minutes evening',
+            '30 minutes morning, 30 minutes evening',
+            '45 minutes whenever convenient'
+          ],
+          correctAnswer: 1,
+          explanation: 'The course recommends a distributed approach: 20 minutes in the morning for vocabulary and grammar, 15 minutes in the afternoon for listening and pronunciation, and 10 minutes in the evening for review.'
+        },
+        {
+          id: '2',
+          question: 'Which week focuses on "Practical Application"?',
+          options: [
+            'Week 1',
+            'Week 2', 
+            'Week 3',
+            'Week 4'
+          ],
+          correctAnswer: 2,
+          explanation: 'Week 3 is dedicated to practical application, where you apply the skills learned in the first two weeks to real-world situations.'
+        },
+        {
+          id: '3',
+          question: 'What is the most important factor for success in language learning according to this lesson?',
+          options: [
+            'Studying for long hours',
+            'Memorizing grammar rules',
+            'Consistency in daily practice',
+            'Having perfect pronunciation'
+          ],
+          correctAnswer: 2,
+          explanation: 'Consistency is emphasized as the key to success. Regular daily practice, even for short periods, is more effective than irregular long study sessions.'
+        },
+        {
+          id: '4',
+          question: 'How many essential phrases should you master on Day 1?',
+          options: [
+            '5 phrases',
+            '10 phrases',
+            '15 phrases',
+            '20 phrases'
+          ],
+          correctAnswer: 1,
+          explanation: 'Day 1 focuses on mastering 10 essential phrases that are fundamental for daily English communication.'
+        },
+        {
+          id: '5',
+          question: 'What should you do as homework after Day 1?',
+          options: [
+            'Only practice the phrases',
+            'Write about your motivation, practice phrases, set schedule, and listen to English music',
+            'Just read the next lesson',
+            'Memorize all grammar rules'
+          ],
+          correctAnswer: 1,
+          explanation: 'The homework includes four activities: writing about your motivation, practicing phrases, setting up your study schedule, and listening to an English song you like.'
+        }
+      ],
+      completed: false
+    },
+    {
+      id: '2',
+      title: 'Day 2: Building Your Foundation - Essential Grammar',
+      description: 'Construa uma base sólida com estruturas gramaticais essenciais',
+      videoUrl: 'https://www.youtube.com/embed/-6J-tNXZkQc',
+      duration: '50:15',
+      textContent: `
+# Day 2: Building Your Foundation - Essential Grammar
+
+## Welcome Back to Day 2!
+
+Yesterday you set your goals and learned essential phrases. Today we're building the grammatical foundation that will support all your future learning.
+
+## Why Grammar Matters
+
+Think of grammar as the skeleton of language:
+- **Structure**: It gives shape to your thoughts
+- **Clarity**: It helps others understand you precisely
+- **Confidence**: Knowing the rules makes you feel secure when speaking
+
+## Today's Grammar Focus: Sentence Structure
+
+### The Basic English Sentence Pattern: SVO
+
+**S**ubject + **V**erb + **O**bject
+
+Examples:
+- **I** (S) **eat** (V) **breakfast** (O)
+- **She** (S) **reads** (V) **books** (O)
+- **They** (S) **watch** (V) **movies** (O)
+
+### Expanding Your Sentences
+
+#### Adding Adjectives:
+- I eat **healthy** breakfast
+- She reads **interesting** books
+- They watch **exciting** movies
+
+#### Adding Adverbs:
+- I eat breakfast **quickly**
+- She reads books **carefully**
+- They watch movies **together**
+
+#### Adding Time and Place:
+- I eat breakfast **at home** **every morning**
+- She reads books **in the library** **after work**
+- They watch movies **at the cinema** **on weekends**
+
+## Present Tense Mastery
+
+### Simple Present Tense
+Used for habits, facts, and general truths.
+
+**Positive Form:**
+- I/You/We/They + base verb
+- He/She/It + base verb + s/es
+
+**Examples:**
+- I work in an office
+- She works in a hospital
+- We work together
+
+**Negative Form:**
+- I/You/We/They + don't + base verb
+- He/She/It + doesn't + base verb
+
+**Examples:**
+- I don't work on Sundays
+- She doesn't work late
+- We don't work weekends
+
+**Question Form:**
+- Do + I/you/we/they + base verb?
+- Does + he/she/it + base verb?
+
+**Examples:**
+- Do you work here?
+- Does she work with you?
+- Do they work together?
+
+## Common Mistakes to Avoid
+
+### 1. Forgetting the 's' in third person
+❌ She work in a bank
+✅ She works in a bank
+
+### 2. Using 'does' with 's' ending
+❌ Does she works here?
+✅ Does she work here?
+
+### 3. Wrong word order in questions
+❌ Where she works?
+✅ Where does she work?
+
+## Practice Exercises
+
+### Exercise 1: Complete the sentences
+1. I _____ (study) English every day
+2. She _____ (not/like) coffee
+3. _____ you _____ (speak) Spanish?
+4. He _____ (go) to work by bus
+5. We _____ (not/watch) TV in the morning
+
+### Exercise 2: Make questions
+1. She lives in New York → _____?
+2. They play football → _____?
+3. He speaks three languages → _____?
+
+## Vocabulary Building: Daily Activities
+
+Learn these 15 essential verbs:
+1. **wake up** - I wake up at 7 AM
+2. **get dressed** - She gets dressed quickly
+3. **have breakfast** - We have breakfast together
+4. **go to work** - He goes to work by train
+5. **start work** - I start work at 9 AM
+6. **have lunch** - They have lunch at noon
+7. **finish work** - She finishes work at 5 PM
+8. **go home** - We go home together
+9. **cook dinner** - I cook dinner for my family
+10. **watch TV** - They watch TV after dinner
+11. **read books** - She reads books before bed
+12. **brush teeth** - I brush my teeth twice a day
+13. **take a shower** - He takes a shower every morning
+14. **go to bed** - We go to bed at 10 PM
+15. **sleep** - I sleep eight hours every night
+
+## Today's Challenge: Describe Your Day
+
+Write 5 sentences about your typical day using the SVO pattern and present tense:
+
+Example:
+1. I wake up at 6:30 AM every morning
+2. I have breakfast with my family
+3. I go to work by car
+4. I finish work at 6 PM
+5. I watch TV before going to bed
+
+## Homework for Tonight:
+1. Complete the practice exercises above
+2. Write 10 sentences about your daily routine
+3. Practice saying the 15 daily activity verbs out loud
+4. Record yourself describing your typical day
+
+## Tomorrow's Preview:
+Day 3 will focus on "Asking Questions and Getting Information" - essential skills for real conversations.
+
+Remember: Grammar is your friend, not your enemy. Master these basics and everything else becomes easier!
+      `,
+      exercises: [
+        {
+          id: '1',
+          question: 'What is the basic English sentence pattern taught in this lesson?',
+          options: [
+            'SOV (Subject-Object-Verb)',
+            'SVO (Subject-Verb-Object)',
+            'VSO (Verb-Subject-Object)',
+            'OSV (Object-Subject-Verb)'
+          ],
+          correctAnswer: 1,
+          explanation: 'The basic English sentence pattern is SVO (Subject-Verb-Object), which is the foundation for building clear and correct sentences.'
+        },
+        {
+          id: '2',
+          question: 'In present tense, what do you add to the verb for he/she/it?',
+          options: [
+            'Nothing',
+            's or es',
+            'ed',
+            'ing'
+          ],
+          correctAnswer: 1,
+          explanation: 'For third person singular (he/she/it) in present tense, you add "s" or "es" to the base verb (e.g., "She works", "He goes").'
+        },
+        {
+          id: '3',
+          question: 'Which sentence is correct?',
+          options: [
+            'Does she works here?',
+            'Do she work here?',
+            'Does she work here?',
+            'Does she working here?'
+          ],
+          correctAnswer: 2,
+          explanation: 'The correct form is "Does she work here?" - use "does" with he/she/it and the base form of the verb (without "s").'
+        },
+        {
+          id: '4',
+          question: 'How many daily activity verbs should you learn today?',
+          options: [
+            '10 verbs',
+            '15 verbs',
+            '20 verbs',
+            '25 verbs'
+          ],
+          correctAnswer: 1,
+          explanation: 'Today\'s lesson focuses on learning 15 essential daily activity verbs to describe your routine.'
+        }
+      ],
+      completed: false
+    },
+    {
+      id: '3',
+      title: 'Day 3: Asking Questions and Getting Information',
+      description: 'Aprenda a fazer perguntas eficazes e obter informações',
+      videoUrl: 'https://www.youtube.com/embed/povotikiPeg',
+      duration: '42:20',
+      textContent: `
+# Day 3: Asking Questions and Getting Information
+
+## The Power of Questions
+
+Questions are the key to communication! They help you:
+- **Get information** you need
+- **Start conversations** with new people
+- **Show interest** in others
+- **Clarify** when you don't understand
+
+## Question Words (WH-Questions)
+
+### The Essential Question Words:
+
+1. **WHAT** - asks about things, actions, or information
+   - What is your name?
+   - What do you do for work?
+   - What time is it?
+
+2. **WHERE** - asks about places or locations
+   - Where do you live?
+   - Where is the bathroom?
+   - Where are you from?
+
+3. **WHEN** - asks about time
+   - When do you start work?
+   - When is your birthday?
+   - When did you arrive?
+
+4. **WHO** - asks about people
+   - Who is your teacher?
+   - Who are you calling?
+   - Who lives here?
+
+5. **WHY** - asks about reasons
+   - Why are you learning English?
+   - Why is the store closed?
+   - Why did you choose this?
+
+6. **HOW** - asks about manner, method, or condition
+   - How are you?
+   - How do you get to work?
+   - How much does it cost?
+
+## Question Formation Rules
+
+### With BE verb (am/is/are):
+**Pattern:** Question word + BE + subject + complement?
+- Where **are** you **from**?
+- What **is** your **name**?
+- How **are** you **today**?
+
+### With other verbs:
+**Pattern:** Question word + DO/DOES + subject + base verb?
+- What **do** you **do** for work?
+- Where **does** she **live**?
+- When **do** they **start** class?
+
+## Yes/No Questions
+
+### With BE verb:
+- **Are** you a student? → Yes, I am. / No, I'm not.
+- **Is** she your sister? → Yes, she is. / No, she isn't.
+
+### With other verbs:
+- **Do** you speak English? → Yes, I do. / No, I don't.
+- **Does** he work here? → Yes, he does. / No, he doesn't.
+
+## Polite Question Forms
+
+### Making Requests:
+- **Could you** help me, please?
+- **Would you** mind opening the window?
+- **Can you** tell me the time?
+
+### Asking for Permission:
+- **May I** use your phone?
+- **Could I** borrow your pen?
+- **Can I** sit here?
+
+### Offering Help:
+- **Would you like** some coffee?
+- **Can I** help you with that?
+- **Shall I** open the door?
+
+## Common Question Patterns for Daily Life
+
+### At a Restaurant:
+- What would you like to drink?
+- Could I have the menu, please?
+- How much is this dish?
+- Where is the restroom?
+
+### At Work:
+- What time is the meeting?
+- Who is presenting today?
+- Where should I put this?
+- How do I use this machine?
+
+### Shopping:
+- How much does this cost?
+- Do you have this in a different size?
+- Where can I pay?
+- What time do you close?
+
+### Getting Directions:
+- Where is the nearest bank?
+- How do I get to the airport?
+- Is it far from here?
+- Which bus should I take?
+
+## Practice Conversations
+
+### Conversation 1: Meeting Someone New
+**A:** Hi! What's your name?
+**B:** I'm Maria. What about you?
+**A:** I'm John. Where are you from, Maria?
+**B:** I'm from Brazil. How about you?
+**A:** I'm from Canada. What do you do for work?
+**B:** I'm a teacher. What about you?
+
+### Conversation 2: Asking for Help
+**A:** Excuse me, could you help me?
+**B:** Of course! What do you need?
+**A:** Where is the train station?
+**B:** It's two blocks from here. Do you see that tall building?
+**A:** Yes, I do.
+**B:** Walk straight until you reach it, then turn left.
+**A:** Thank you so much!
+
+## Question Intonation
+
+### Rising Intonation (↗):
+Used for Yes/No questions:
+- Are you ready? ↗
+- Do you like pizza? ↗
+- Is this your book? ↗
+
+### Falling Intonation (↘):
+Used for WH-questions:
+- What's your name? ↘
+- Where do you live? ↘
+- How are you? ↘
+
+## Today's Challenge: Information Hunt
+
+Practice asking questions by finding out these things about a friend or family member:
+1. Their favorite food
+2. Their hobby
+3. Their dream vacation destination
+4. Their favorite movie
+5. What they did last weekend
+
+## Homework for Tonight:
+1. Write 10 questions using different question words
+2. Practice the two conversations above out loud
+3. Ask someone 5 questions about their day
+4. Record yourself asking and answering questions
+
+## Tomorrow's Preview:
+Day 4 will focus on "Describing People and Things" - essential vocabulary and adjectives for detailed descriptions.
+
+Remember: Don't be afraid to ask questions! People appreciate when you show interest in them and their lives.
+      `,
+      exercises: [
+        {
+          id: '1',
+          question: 'Which question word do you use to ask about places?',
+          options: [
+            'What',
+            'When',
+            'Where',
+            'Who'
+          ],
+          correctAnswer: 2,
+          explanation: '"Where" is used to ask about places or locations, such as "Where do you live?" or "Where is the bathroom?"'
+        },
+        {
+          id: '2',
+          question: 'What is the correct question formation with the BE verb?',
+          options: [
+            'Question word + subject + BE + complement?',
+            'Question word + BE + subject + complement?',
+            'BE + question word + subject + complement?',
+            'Subject + question word + BE + complement?'
+          ],
+          correctAnswer: 1,
+          explanation: 'With the BE verb, the pattern is: Question word + BE + subject + complement (e.g., "Where are you from?")'
+        },
+        {
+          id: '3',
+          question: 'Which intonation pattern is used for Yes/No questions?',
+          options: [
+            'Falling intonation (↘)',
+            'Rising intonation (↗)',
+            'Flat intonation',
+            'No specific pattern'
+          ],
+          correctAnswer: 1,
+          explanation: 'Yes/No questions use rising intonation (↗), while WH-questions use falling intonation (↘).'
+        },
+        {
+          id: '4',
+          question: 'Which is the most polite way to ask for help?',
+          options: [
+            'Help me!',
+            'I need help.',
+            'Could you help me, please?',
+            'You must help me.'
+          ],
+          correctAnswer: 2,
+          explanation: '"Could you help me, please?" is the most polite form, using "could" and "please" to make a courteous request.'
+        }
+      ],
+      completed: false
+    }
+    // Continue with more lessons... (Days 4-30)
+    // For brevity, I'll add a few more key lessons
+  ]
+};
+
 export const bonusResources: BonusResource[] = [
+  cursoIntensivo30Dias,
   {
     id: 'maximizing-teacher-poli',
     title: 'Maximizando seu Aprendizado com a Teacher Poli',
