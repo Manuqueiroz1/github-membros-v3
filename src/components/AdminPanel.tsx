@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, Plus, Edit3, Save, X, Upload, Trash2, Eye, EyeOff, ArrowLeft, Video, MessageSquare, Users, UserPlus, UserMinus, Calendar, Shield } from 'lucide-react';
+import { Settings, Plus, Edit3, Save, X, Upload, Trash2, Eye, EyeOff, ArrowLeft, Video, MessageSquare, Users, UserPlus, UserMinus, Calendar, Shield, UserCheck } from 'lucide-react';
 import { BonusResource, BonusLesson, QuizQuestion } from '../types';
 import { bonusResources } from '../data/bonusData';
 import { OnboardingVideo, PopupContent, getOnboardingVideos, getPopupContents, saveOnboardingVideos, savePopupContents } from '../data/onboardingData';
@@ -12,7 +12,7 @@ interface AdminPanelProps {
 }
 
 export default function AdminPanel({ isVisible, onToggle, userEmail }: AdminPanelProps) {
-  const [activeTab, setActiveTab] = useState<'bonuses' | 'lessons' | 'exercises' | 'onboarding' | 'popups'>('bonuses');
+  const [activeTab, setActiveTab] = useState<'bonuses' | 'lessons' | 'exercises' | 'onboarding' | 'popups' | 'users'>('bonuses');
   const [editingItem, setEditingItem] = useState<any>(null);
   const [showAddForm, setShowAddForm] = useState(false);
 
@@ -56,7 +56,8 @@ export default function AdminPanel({ isVisible, onToggle, userEmail }: AdminPane
               { id: 'lessons', label: 'Gerenciar Aulas', icon: '📚' },
               { id: 'exercises', label: 'Gerenciar Exercícios', icon: '🧠' },
               { id: 'onboarding', label: 'Comece por Aqui', icon: '🚀' },
-              { id: 'popups', label: 'Pop-ups', icon: '💬' }
+              { id: 'popups', label: 'Pop-ups', icon: '💬' },
+              { id: 'users', label: 'Gerenciar Usuários', icon: '👥' }
             ].map((tab) => (
               <button
                 key={tab.id}
@@ -81,6 +82,7 @@ export default function AdminPanel({ isVisible, onToggle, userEmail }: AdminPane
           {activeTab === 'exercises' && <ExerciseManagement />}
           {activeTab === 'onboarding' && <OnboardingManagement />}
           {activeTab === 'popups' && <PopupManagement />}
+          {activeTab === 'users' && <UserManagement userEmail={userEmail} />}
         </div>
       </div>
     </div>
@@ -1185,6 +1187,249 @@ function PopupManagement() {
           ))}
         </div>
       )}
+    </div>
+  );
+}
+
+// Componente para gerenciar usuários com acesso manual
+function UserManagement({ userEmail }: { userEmail: string }) {
+  const [manualUsers, setManualUsers] = useState<ManualAccessUser[]>(getManualAccessUsers());
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newUser, setNewUser] = useState({
+    email: '',
+    name: '',
+    reason: '',
+    expiresAt: ''
+  });
+
+  const refreshUsers = () => {
+    setManualUsers(getManualAccessUsers());
+  };
+
+  const handleGrantAccess = () => {
+    if (!newUser.email || !newUser.name || !newUser.reason) {
+      alert('Por favor, preencha todos os campos obrigatórios');
+      return;
+    }
+
+    const expirationDate = newUser.expiresAt ? new Date(newUser.expiresAt) : undefined;
+    
+    const success = grantManualAccess(
+      newUser.email,
+      newUser.name,
+      userEmail,
+      newUser.reason,
+      expirationDate
+    );
+
+    if (success) {
+      alert('Acesso concedido com sucesso!');
+      setNewUser({ email: '', name: '', reason: '', expiresAt: '' });
+      setShowAddForm(false);
+      refreshUsers();
+    } else {
+      alert('Erro ao conceder acesso. Tente novamente.');
+    }
+  };
+
+  const handleRevokeAccess = (email: string) => {
+    if (confirm(`Tem certeza que deseja revogar o acesso de ${email}?`)) {
+      const success = revokeManualAccess(email);
+      if (success) {
+        alert('Acesso revogado com sucesso!');
+        refreshUsers();
+      } else {
+        alert('Erro ao revogar acesso.');
+      }
+    }
+  };
+
+  const formatDate = (date: Date) => {
+    return new Date(date).toLocaleDateString('pt-BR', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit'
+    });
+  };
+
+  const isExpired = (user: ManualAccessUser) => {
+    return user.expiresAt && new Date() > new Date(user.expiresAt);
+  };
+
+  return (
+    <div>
+      <div className="flex justify-between items-center mb-6">
+        <div>
+          <h3 className="text-lg font-semibold">Gerenciar Acesso Manual</h3>
+          <p className="text-sm text-gray-600">Libere acesso para usuários sem compra na Hotmart</p>
+        </div>
+        <button
+          onClick={() => setShowAddForm(true)}
+          className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center"
+        >
+          <UserPlus className="h-4 w-4 mr-2" />
+          Liberar Acesso
+        </button>
+      </div>
+
+      {/* Formulário para adicionar usuário */}
+      {showAddForm && (
+        <div className="bg-gray-50 rounded-lg p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-lg font-semibold">Conceder Acesso Manual</h4>
+            <button
+              onClick={() => setShowAddForm(false)}
+              className="text-gray-500 hover:text-gray-700 p-2"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Email do Usuário *
+              </label>
+              <input
+                type="email"
+                value={newUser.email}
+                onChange={(e) => setNewUser({ ...newUser, email: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                placeholder="usuario@email.com"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Nome Completo *
+              </label>
+              <input
+                type="text"
+                value={newUser.name}
+                onChange={(e) => setNewUser({ ...newUser, name: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                placeholder="Nome do usuário"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Motivo da Liberação *
+              </label>
+              <select
+                value={newUser.reason}
+                onChange={(e) => setNewUser({ ...newUser, reason: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                required
+              >
+                <option value="">Selecione o motivo</option>
+                <option value="Bônus">Bônus</option>
+                <option value="Acesso Gratuito">Acesso Gratuito</option>
+                <option value="Parceria">Parceria</option>
+                <option value="Teste">Teste</option>
+                <option value="Cortesia">Cortesia</option>
+                <option value="Outro">Outro</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Data de Expiração (opcional)
+              </label>
+              <input
+                type="datetime-local"
+                value={newUser.expiresAt}
+                onChange={(e) => setNewUser({ ...newUser, expiresAt: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+
+          <div className="flex justify-end space-x-3 mt-6">
+            <button
+              onClick={() => setShowAddForm(false)}
+              className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
+            >
+              Cancelar
+            </button>
+            <button
+              onClick={handleGrantAccess}
+              className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center"
+            >
+              <UserCheck className="h-4 w-4 mr-2" />
+              Conceder Acesso
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Lista de usuários com acesso manual */}
+      <div className="bg-white rounded-lg border border-gray-200">
+        <div className="p-4 border-b border-gray-200">
+          <h4 className="font-semibold text-gray-900">
+            Usuários com Acesso Manual ({manualUsers.length})
+          </h4>
+        </div>
+        
+        {manualUsers.length === 0 ? (
+          <div className="p-8 text-center text-gray-500">
+            <Users className="h-12 w-12 mx-auto mb-4 text-gray-300" />
+            <p>Nenhum usuário com acesso manual encontrado</p>
+            <p className="text-sm">Clique em "Liberar Acesso" para adicionar usuários</p>
+          </div>
+        ) : (
+          <div className="divide-y divide-gray-200">
+            {manualUsers.map((user) => (
+              <div key={user.email} className="p-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex-1">
+                    <div className="flex items-center space-x-3">
+                      <div className={`w-3 h-3 rounded-full ${
+                        !user.isActive ? 'bg-red-500' : 
+                        isExpired(user) ? 'bg-yellow-500' : 'bg-green-500'
+                      }`}></div>
+                      <div>
+                        <h5 className="font-medium text-gray-900">{user.name}</h5>
+                        <p className="text-sm text-gray-600">{user.email}</p>
+                      </div>
+                    </div>
+                    <div className="mt-2 text-xs text-gray-500 space-y-1">
+                      <p><strong>Motivo:</strong> {user.reason}</p>
+                      <p><strong>Liberado por:</strong> {user.grantedBy}</p>
+                      <p><strong>Data:</strong> {formatDate(user.grantedAt)}</p>
+                      {user.expiresAt && (
+                        <p><strong>Expira em:</strong> {formatDate(user.expiresAt)}</p>
+                      )}
+                      <p><strong>Status:</strong> 
+                        <span className={`ml-1 ${
+                          !user.isActive ? 'text-red-600' : 
+                          isExpired(user) ? 'text-yellow-600' : 'text-green-600'
+                        }`}>
+                          {!user.isActive ? 'Revogado' : 
+                           isExpired(user) ? 'Expirado' : 'Ativo'}
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+                  {user.isActive && !isExpired(user) && (
+                    <button
+                      onClick={() => handleRevokeAccess(user.email)}
+                      className="bg-red-600 text-white px-3 py-1 rounded text-sm hover:bg-red-700 transition-colors flex items-center"
+                    >
+                      <UserMinus className="h-3 w-3 mr-1" />
+                      Revogar
+                    </button>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
