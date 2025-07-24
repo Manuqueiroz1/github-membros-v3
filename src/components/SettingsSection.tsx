@@ -4,7 +4,6 @@ import { useTheme } from '../hooks/useTheme';
 import { useLocalStorage } from '../hooks/useLocalStorage';
 import SupportButton from './SupportButton';
 import PersonalDataModal from './PersonalDataModal';
-import ConfigurationPanel from './ConfigurationPanel';
 
 export default function SettingsSection() {
   const { theme, setTheme, actualTheme } = useTheme();
@@ -14,7 +13,6 @@ export default function SettingsSection() {
     community: false
   });
   const [showPasswordModal, setShowPasswordModal] = React.useState(false);
-  const [showConfigPanel, setShowConfigPanel] = React.useState(false);
   const [passwordData, setPasswordData] = React.useState({
     current: '',
     new: '',
@@ -27,6 +25,20 @@ export default function SettingsSection() {
   });
 
   const [showPersonalDataModal, setShowPersonalDataModal] = React.useState(false);
+  const [showConfigPanel, setShowConfigPanel] = React.useState(false);
+  const [ConfigurationPanel, setConfigurationPanel] = React.useState<React.ComponentType<any> | null>(null);
+
+  // Carregamento dinâmico do painel de configuração
+  const handleOpenConfigPanel = async () => {
+    try {
+      const { default: ConfigPanel } = await import('./ConfigurationPanel');
+      setConfigurationPanel(() => ConfigPanel);
+      setShowConfigPanel(true);
+    } catch (error) {
+      console.error('Erro ao carregar painel de configuração:', error);
+      alert('Erro ao carregar painel de configuração');
+    }
+  };
 
   const handleNotificationChange = (key: string, value: boolean) => {
     setNotifications(prev => ({
@@ -131,7 +143,7 @@ export default function SettingsSection() {
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Dados pessoais</span>
             </button>
             <button 
-              onClick={() => setShowConfigPanel(true)}
+              onClick={handleOpenConfigPanel}
               className="w-full flex items-center justify-between p-3 rounded-lg border border-gray-200 dark:border-gray-600 hover:border-gray-300 dark:hover:border-gray-500 transition-colors">
               <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Configurar IA (OpenAI)</span>
             </button>
@@ -333,10 +345,12 @@ export default function SettingsSection() {
       />
 
       {/* OpenAI Configuration Panel */}
-      <ConfigurationPanel 
-        isOpen={showConfigPanel}
-        onClose={() => setShowConfigPanel(false)}
-      />
+      {ConfigurationPanel && (
+        <ConfigurationPanel 
+          isOpen={showConfigPanel}
+          onClose={() => setShowConfigPanel(false)}
+        />
+      )}
 
       {/* Support Section */}
       <div className="mt-8 bg-purple-50 rounded-lg p-6 text-center">

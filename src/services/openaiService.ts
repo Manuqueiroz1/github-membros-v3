@@ -1,4 +1,3 @@
-import OpenAI from 'openai';
 import OPENAI_CONFIG, { validateOpenAIConfig } from '../utils/openaiConfig';
 
 export interface ChatMessage {
@@ -24,7 +23,7 @@ export interface StudyPlan {
 }
 
 class OpenAIService {
-  private openai: OpenAI | null = null;
+  private openai: any = null;
   private threadId: string | null = null;
   private isInitialized = false;
 
@@ -39,6 +38,14 @@ class OpenAIService {
     }
 
     try {
+      // Importação dinâmica para evitar erros se não estiver instalado
+      const OpenAI = await import('openai').then(m => m.default).catch(() => null);
+      
+      if (!OpenAI) {
+        console.warn('⚠️ OpenAI package não encontrado - usando modo simulação');
+        return;
+      }
+
       this.openai = new OpenAI({
         apiKey: OPENAI_CONFIG.apiKey,
         organization: OPENAI_CONFIG.organizationId,

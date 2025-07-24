@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Brain, Send, User, Bot, Sparkles, BookOpen, Target, Clock, Download, FileText } from 'lucide-react';
 import SupportButton from './SupportButton';
-import openaiService from '../services/openaiService';
 
 interface Message {
   id: string;
@@ -63,7 +62,8 @@ export default function AIAssistantSection({ onPlanGenerated }: AIAssistantSecti
     setIsLoading(true);
 
     try {
-      // Usar OpenAI Service para resposta real
+      // Importação dinâmica do serviço OpenAI
+      const { default: openaiService } = await import('../services/openaiService');
       const aiResponse = await openaiService.sendMessage(inputMessage);
       
       const assistantMessage: Message = {
