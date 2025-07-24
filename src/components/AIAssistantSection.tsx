@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Brain, Send, User, Bot, Sparkles, BookOpen, Target, Clock, Download, FileText } from 'lucide-react';
 import SupportButton from './SupportButton';
+import openaiService from '../services/openaiService';
 
 interface Message {
   id: string;
@@ -61,24 +62,30 @@ export default function AIAssistantSection({ onPlanGenerated }: AIAssistantSecti
     setInputMessage('');
     setIsLoading(true);
 
-    // Simulate AI response
-    setTimeout(() => {
-      const aiResponse: Message = {
+    try {
+      // Enviar mensagem para OpenAI Assistant
+      const aiResponse = await openaiService.sendMessage(inputMessage);
+      
+      const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         type: 'assistant',
-        content: 'Perfeito! Com base nas suas informações, criei um plano de estudos personalizado para você. Você pode baixá-lo no painel ao lado.',
+        content: aiResponse,
         timestamp: new Date()
       };
-      setMessages(prev => [...prev, aiResponse]);
+      setMessages(prev => [...prev, assistantMessage]);
       
-      // Simulate plan generation
-      setGeneratedPlan({
-        title: 'Plano de Estudos Personalizado',
-        level: 'Intermediário',
-        objective: 'Conversação fluente',
-        dailyTime: '45 minutos',
-        generatedAt: new Date()
-      });
+      // Verificar se a resposta indica geração de plano
+      if (aiResponse.toLowerCase().includes('plano') || aiResponse.toLowerCase().includes('plan')) {
+        // Gerar plano baseado na conversa
+        const planData = await openaiService.generateStudyPlan({
+          level: 'Intermediário', // Pode ser extraído da conversa
+          objectives: ['Conversação fluente'],
+          availableTime: '45 minutos',
+          interests: ['Negócios', 'Viagens']
+        });
+        
+        setGeneratedPlan(planData);
+      }
       
       // Notify parent component that plan was generated
       if (onPlanGenerated) {
@@ -91,8 +98,12 @@ export default function AIAssistantSection({ onPlanGenerated }: AIAssistantSecti
         }, 500);
       }
       
+    } catch (error) {
+      console.error('Erro ao enviar mensagem:', error);
+      // Fallback para resposta simulada em caso de erro
+    } finally {
       setIsLoading(false);
-    }, 2000);
+    }
   };
 
   const handleTemplateSelect = (template: any) => {
