@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Settings, Plus, Edit3, Save, X, Upload, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Settings, Plus, Edit3, Save, X, Upload, Trash2, Eye, EyeOff, ArrowLeft } from 'lucide-react';
 import { BonusResource, BonusLesson, QuizQuestion } from '../types';
 import { bonusResources } from '../data/bonusData';
 
@@ -85,17 +85,62 @@ export default function AdminPanel({ isVisible, onToggle, userEmail }: AdminPane
 function BonusManagement() {
   const [editingBonus, setEditingBonus] = useState<BonusResource | null>(null);
   const [showAddForm, setShowAddForm] = useState(false);
+  const [bonusList, setBonusList] = useState<BonusResource[]>(bonusResources);
 
   const handleEdit = (bonus: BonusResource) => {
     setEditingBonus({ ...bonus });
   };
 
+  const handleAddNew = () => {
+    const newBonus: BonusResource = {
+      id: `bonus-${Date.now()}`,
+      title: 'Novo Bônus',
+      description: 'Descrição do novo bônus',
+      type: 'course',
+      thumbnail: 'https://images.pexels.com/photos/4145190/pexels-photo-4145190.jpeg?auto=compress&cs=tinysrgb&w=800',
+      totalLessons: 0,
+      totalDuration: '0h',
+      rating: 5.0,
+      downloads: 0,
+      lessons: []
+    };
+    setEditingBonus(newBonus);
+    setShowAddForm(true);
+  };
   const handleSave = () => {
     if (editingBonus) {
-      // Aqui você salvaria no backend/localStorage
+      if (showAddForm) {
+        // Adicionar novo bônus
+        setBonusList(prev => [...prev, editingBonus]);
+        setShowAddForm(false);
+      } else {
+        // Atualizar bônus existente
+        setBonusList(prev => 
+          prev.map(bonus => 
+            bonus.id === editingBonus.id ? editingBonus : bonus
+          )
+        );
+      }
+      
+      // Salvar no localStorage para persistência
+      localStorage.setItem('teacherpoli_bonus_data', JSON.stringify(bonusList));
+      
       console.log('Salvando bônus:', editingBonus);
       setEditingBonus(null);
-      alert('Bônus salvo com sucesso!');
+      alert(showAddForm ? 'Novo bônus criado com sucesso!' : 'Bônus atualizado com sucesso!');
+    }
+  };
+
+  const handleCancel = () => {
+    setEditingBonus(null);
+    setShowAddForm(false);
+  };
+
+  const handleDelete = (bonusId: string) => {
+    if (confirm('Tem certeza que deseja excluir este bônus? Esta ação não pode ser desfeita.')) {
+      setBonusList(prev => prev.filter(bonus => bonus.id !== bonusId));
+      localStorage.setItem('teacherpoli_bonus_data', JSON.stringify(bonusList.filter(bonus => bonus.id !== bonusId)));
+      alert('Bônus excluído com sucesso!');
     }
   };
 
@@ -113,7 +158,7 @@ function BonusManagement() {
       <div className="flex justify-between items-center mb-6">
         <h3 className="text-lg font-semibold">Gerenciar Bônus</h3>
         <button
-          onClick={() => setShowAddForm(true)}
+          onClick={handleAddNew}
           className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center"
         >
           <Plus className="h-4 w-4 mr-2" />
@@ -123,7 +168,17 @@ function BonusManagement() {
 
       {editingBonus ? (
         <div className="bg-gray-50 rounded-lg p-6">
-          <h4 className="text-lg font-semibold mb-4">Editando: {editingBonus.title}</h4>
+          <div className="flex items-center justify-between mb-4">
+            <h4 className="text-lg font-semibold">
+              {showAddForm ? 'Criando Novo Bônus' : `Editando: ${editingBonus.title}`}
+            </h4>
+            <button
+              onClick={handleCancel}
+              className="text-gray-500 hover:text-gray-700 p-2"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+          </div>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
@@ -133,6 +188,19 @@ function BonusManagement() {
                 value={editingBonus.title}
                 onChange={(e) => setEditingBonus({ ...editingBonus, title: e.target.value })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">ID do Bônus</label>
+              <input
+                type="text"
+                value={editingBonus.id}
+                onChange={(e) => setEditingBonus({ ...editingBonus, id: e.target.value })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                placeholder="bonus-exemplo"
+                disabled={!showAddForm}
+                title={!showAddForm ? "ID não pode ser alterado após criação" : ""}
               />
             </div>
 
@@ -171,6 +239,17 @@ function BonusManagement() {
             </div>
 
             <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Total de Aulas</label>
+              <input
+                type="number"
+                min="0"
+                value={editingBonus.totalLessons}
+                onChange={(e) => setEditingBonus({ ...editingBonus, totalLessons: parseInt(e.target.value) || 0 })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Avaliação</label>
               <input
                 type="number"
@@ -179,6 +258,17 @@ function BonusManagement() {
                 step="0.1"
                 value={editingBonus.rating}
                 onChange={(e) => setEditingBonus({ ...editingBonus, rating: parseFloat(e.target.value) })}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Downloads</label>
+              <input
+                type="number"
+                min="0"
+                value={editingBonus.downloads}
+                onChange={(e) => setEditingBonus({ ...editingBonus, downloads: parseInt(e.target.value) || 0 })}
                 className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
               />
             </div>
@@ -207,7 +297,7 @@ function BonusManagement() {
 
           <div className="flex justify-end space-x-3 mt-6">
             <button
-              onClick={() => setEditingBonus(null)}
+              onClick={handleCancel}
               className="px-4 py-2 text-gray-600 hover:text-gray-800 transition-colors"
             >
               Cancelar
@@ -217,13 +307,13 @@ function BonusManagement() {
               className="bg-red-600 text-white px-4 py-2 rounded-lg hover:bg-red-700 transition-colors flex items-center"
             >
               <Save className="h-4 w-4 mr-2" />
-              Salvar
+              {showAddForm ? 'Criar Bônus' : 'Salvar Alterações'}
             </button>
           </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {bonusResources.map((bonus) => (
+          {bonusList.map((bonus) => (
             <div key={bonus.id} className="bg-white border border-gray-200 rounded-lg p-4">
               <img 
                 src={bonus.thumbnail} 
@@ -233,14 +323,26 @@ function BonusManagement() {
               <h4 className="font-semibold text-gray-900 mb-2">{bonus.title}</h4>
               <p className="text-sm text-gray-600 mb-3 line-clamp-2">{bonus.description}</p>
               <div className="flex justify-between items-center">
-                <span className="text-xs text-gray-500">{bonus.totalLessons} aulas</span>
-                <button
-                  onClick={() => handleEdit(bonus)}
-                  className="bg-red-600 text-white px-3 py-1 rounded text-xs hover:bg-red-700 transition-colors flex items-center"
-                >
-                  <Edit3 className="h-3 w-3 mr-1" />
-                  Editar
-                </button>
+                <div className="text-xs text-gray-500">
+                  <div>{bonus.totalLessons} aulas</div>
+                  <div>{bonus.downloads} downloads</div>
+                </div>
+                <div className="flex space-x-2">
+                  <button
+                    onClick={() => handleEdit(bonus)}
+                    className="bg-blue-600 text-white px-2 py-1 rounded text-xs hover:bg-blue-700 transition-colors flex items-center"
+                  >
+                    <Edit3 className="h-3 w-3 mr-1" />
+                    Editar
+                  </button>
+                  <button
+                    onClick={() => handleDelete(bonus.id)}
+                    className="bg-red-600 text-white px-2 py-1 rounded text-xs hover:bg-red-700 transition-colors flex items-center"
+                  >
+                    <Trash2 className="h-3 w-3 mr-1" />
+                    Excluir
+                  </button>
+                </div>
               </div>
             </div>
           ))}

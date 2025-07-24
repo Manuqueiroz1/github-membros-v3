@@ -6,9 +6,23 @@ import BonusDetailPage from './BonusDetailPage';
 
 export default function ResourcesSection() {
   const [selectedBonus, setSelectedBonus] = React.useState<string | null>(null);
+  const [currentBonuses, setCurrentBonuses] = React.useState(bonusResources);
+
+  // Carregar bônus salvos do localStorage
+  React.useEffect(() => {
+    const savedBonuses = localStorage.getItem('teacherpoli_bonus_data');
+    if (savedBonuses) {
+      try {
+        const parsedBonuses = JSON.parse(savedBonuses);
+        setCurrentBonuses(parsedBonuses);
+      } catch (error) {
+        console.error('Erro ao carregar bônus salvos:', error);
+      }
+    }
+  }, []);
 
   if (selectedBonus) {
-    const bonus = bonusResources.find(b => b.id === selectedBonus);
+    const bonus = currentBonuses.find(b => b.id === selectedBonus);
     if (bonus) {
       return (
         <BonusDetailPage 
@@ -65,10 +79,10 @@ export default function ResourcesSection() {
               Bônus Especial
             </div>
             <h3 className="text-xl sm:text-2xl font-bold mb-4">
-              Curso Intensivo de 30 Dias
+              {currentBonuses.find(b => b.id === 'curso-intensivo-30-dias')?.title || 'Curso Intensivo de 30 Dias'}
             </h3>
             <p className="text-purple-100 mb-6 text-sm sm:text-base">
-              Um programa completo para acelerar seu aprendizado de inglês
+              {currentBonuses.find(b => b.id === 'curso-intensivo-30-dias')?.description || 'Um programa completo para acelerar seu aprendizado de inglês'}
             </p>
             <button 
               onClick={() => setSelectedBonus('curso-intensivo-30-dias')}
@@ -83,11 +97,11 @@ export default function ResourcesSection() {
           <div className="bg-white/10 backdrop-blur-sm rounded-xl p-4 sm:p-6">
             <div className="grid grid-cols-2 gap-3 sm:gap-4 text-center">
               <div>
-                <div className="text-lg sm:text-2xl font-bold">30 dias</div>
+                <div className="text-lg sm:text-2xl font-bold">{currentBonuses.find(b => b.id === 'curso-intensivo-30-dias')?.totalLessons || 30} dias</div>
                 <div className="text-purple-200 text-xs sm:text-sm">de atividades</div>
               </div>
               <div>
-                <div className="text-lg sm:text-2xl font-bold">+ de 30h</div>
+                <div className="text-lg sm:text-2xl font-bold">{currentBonuses.find(b => b.id === 'curso-intensivo-30-dias')?.totalDuration || '+ de 30h'}</div>
                 <div className="text-purple-200 text-xs sm:text-sm">de aulas</div>
               </div>
               <div>
@@ -105,7 +119,7 @@ export default function ResourcesSection() {
 
       {/* Resources Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
-        {bonusResources.map((resource) => {
+        {currentBonuses.filter(resource => resource.id !== 'curso-intensivo-30-dias').map((resource) => {
           const Icon = getIcon(resource.type);
           return (
             <div key={resource.id} className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden hover:shadow-md transition-shadow">
